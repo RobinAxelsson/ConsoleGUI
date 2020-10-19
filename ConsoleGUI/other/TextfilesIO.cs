@@ -6,15 +6,30 @@ using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.VisualStudio.TestPlatform.Utilities;
 using System.Runtime.CompilerServices;
+using System.IO.Enumeration;
 
 namespace ConsoleGUI
 {
     public static class TextfilesIO
     {
         public static string TextfilesPath { get; } = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName + "\\Textfiles\\";
+
         public static void SaveListOfInt(List<int> ints, string fileName = "Save.csv")
         {
             File.AppendAllText(TextfilesPath + fileName, string.Join(',', ints));
+        }
+        public static void SaveListOfPoint(List<(int X, int Y)> points, string fileName)
+            {
+            int length = points.Count;
+            string pair;
+            var pairs = new List<string>();
+            for (int i = 0; i < length; i++)
+            {
+                pair = $"{points[i].X}, {points[i].Y}";
+                pairs.Add(pair);
+                
+            }
+            File.AppendAllText(TextfilesPath + fileName, string.Join(' ', pairs.ToArray()));
         }
         public static void SaveString(string line, string fileName = "Save.csv")
         {

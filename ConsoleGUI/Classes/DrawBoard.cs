@@ -6,10 +6,37 @@ using System.Xml.Linq;
 
 namespace ConsoleGUI
 {
-    public static class Draw
-    {            
-        
+    public static class DrawBoard
+    {
+        public static int XEnd = (int)Math.Round(Console.BufferWidth * 0.8);
+        public static int YEnd = (int)Math.Round(Console.BufferHeight * 0.8);
+        public static void Frame()
+        {
+            int Width = XEnd +1;
+            int Height = YEnd +1;
 
+            for (int i = 1; i <= Width; i++)
+            {
+                CharAt(i, 0, '─');
+                CharAt(i, (Height), '─');
+            }
+            for (int i = 1; i <= (Height); i++)
+            {
+                CharAt(0, i, '│');
+                CharAt((Width), i, '│');
+            }
+
+            CharAt(0, 0, '┌');
+            CharAt((Width), 0, '┐');
+            CharAt(0, (Height), '└');
+            CharAt((Width), (Height), '┘');
+
+            Console.CursorVisible = true;
+        }
+        public static bool IsInsideDrawboard((int X, int Y) point)
+        {
+            return (point.X >= 1 && point.Y >= 1 && point.X <= XEnd && point.Y <= YEnd) ? true : false;
+        }
         public static void At(int X, int Y, ConsoleColor color = ConsoleColor.White)
         {
  
@@ -51,14 +78,14 @@ namespace ConsoleGUI
 
             foreach ((int X, int Y) point in points)
             {
-                if (point.X > 0 && point.Y > 0 && point.X < Console.BufferWidth-1)
+                if (IsInsideDrawboard(point))
                 {
                     Console.SetCursorPosition(point.X, point.Y);
                     Console.BackgroundColor = color;
-                    Console.Write(" ");        
-                 }
+                    Console.Write(" ");
+                    
+                }               
             }
-
             ResetColors(colorSave);
             ResetCursor(cursorPos);
             Console.CursorVisible = true;

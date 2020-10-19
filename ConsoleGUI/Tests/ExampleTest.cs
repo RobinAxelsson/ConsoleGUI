@@ -33,15 +33,25 @@ namespace ConsoleGUI
         [TestMethod]
         public void Circle_GetPoints()
         {
-            int X1 = 5;
-            int Y1 = 5;
-            int X2 = 100;
-            int Y2 = 100;
+            int X1 = 0;
+            int Y1 = 0;
+            int X2 = 3;
+            int Y2 = 4;
 
             (int X, int Y) point1 = (X1, Y1);
             (int X, int Y) point2 = (X2, Y2);
 
-           var points = Geometry.Circle(point1, point2);
+            var points = Geometry.CircleWithCenter(point1, point2);
+
+        }
+        [TestMethod]
+        public void Fill_GetPointsBetween()
+        {
+            double radius = 10;
+            var Xs = new List<double>();
+            var Ys = new List<double>();
+            Geometry.CircleEdgeXYsDouble(out Xs, out Ys, radius);
+
 
         }
     }

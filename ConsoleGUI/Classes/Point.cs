@@ -75,7 +75,22 @@ namespace ConsoleGUI
             }
             return Ys;
         }
+        public static bool doubleXYsToInt(List<double> doubleXs, List<double> doubleYs, out List<int> Xs, out List<int> Ys)
+        {
 
+            Xs = new List<int>();
+            Ys = new List<int>();
+
+            foreach (double x in doubleXs)
+            {
+                Xs.Add((int)Math.Round(x));
+            }
+            foreach (double y in doubleYs)
+            {
+                Ys.Add((int)Math.Round(y));
+            }
+            return Xs.Count == Ys.Count;
+        }
 
         public static (int X, int Y) FromUser()
         {

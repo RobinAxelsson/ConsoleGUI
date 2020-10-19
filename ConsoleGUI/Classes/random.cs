@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ConsoleGUI
 {
-    public static class display
+    public static class random
     {
         public static void Spots()
         {
@@ -17,7 +17,7 @@ namespace ConsoleGUI
                 int Left = random.Next(0, 80);
                 int Top = random.Next(0, 20);
                 key = Console.ReadKey(true).Key;
-                Draw.At(Left, Top, ConsoleColor.Red);
+                DrawBoard.At(Left, Top, ConsoleColor.Red);
             }
         }
     }
