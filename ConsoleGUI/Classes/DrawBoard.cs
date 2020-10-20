@@ -1,19 +1,91 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Xml.Linq;
 
 namespace ConsoleGUI
 {
-    public static class DrawBoard
+    using static LayerObject.ShapeType;
+    public class DrawBoard
     {
-        public static int XEnd = (int)Math.Round(Console.BufferWidth * 0.8);
-        public static int YEnd = (int)Math.Round(Console.BufferHeight * 0.8);
-        public static void Frame()
+        public (int X, int Y) StartPoint = (1, 1);
+        public (int X, int Y) EndPoint = (150, 50);
+        public LayerObject Area;
+        public static List<(int X, int Y)> AreaPoints;
+        public DrawBoard()
+        {           
+
+            var area = new LayerObject(StartPoint, EndPoint, Rectangle);
+            Area = area;
+            AreaPoints = area.GeometricalPoints;
+            //Console.BufferHeight = Console.WindowHeight +3;
+            DrawFrame();
+            BufferFrame();
+            Console.SetCursorPosition(75, 25);
+
+            var coloroptions = new List<string>
+            {
+                "Press Hotkeys[hotkey]",
+                "-for all commands-",
+                "Confirm command [Enter]",
+                "",
+                "Change Color:",
+                "Default Black[d]",
+                "White [w]",
+                "Blue [b]",
+                "Red [r]",
+                "Yellow [y]",
+                "Green [g]",
+                "",
+                "New Object:",
+                "Circle [c]",
+                "Rectangle [e]",
+                "Line [l]",
+                "",
+                "Change Current Object",
+                "",
+                "Move [m]",
+                "Fill/Unfill [f]",
+                "Rescale [s]",
+                "Move object forward [+]",
+                "Move object backwards [-]"
+            };
+
+            LinesAt(159, 2, coloroptions);
+            
+        }
+        public void DrawFrame()
         {
-            int Width = XEnd +1;
-            int Height = YEnd +1;
+
+            int Width = EndPoint.X + 1;
+            int Height = EndPoint.Y + 1;
+
+            for (int i = 1; i <= Width; i++)
+            {
+                CharAt(i, 0, '─');
+                CharAt(i, (Height), '─');
+            }
+            for (int i = 1; i <= (Height); i++)
+            {
+                CharAt(0, i, '│');
+                CharAt((Width), i, '│');
+            }
+
+            CharAt(0, 0, '┌');
+            CharAt((Width), 0, '┐');
+            CharAt(0, (Height), '└');
+            CharAt((Width), (Height), '┘');
+
+            Console.CursorVisible = true;
+        }
+
+        public void BufferFrame()
+        {
+
+            int Width = Console.BufferWidth-5;
+            int Height = Console.BufferHeight-5;
 
             for (int i = 1; i <= Width; i++)
             {
@@ -35,9 +107,9 @@ namespace ConsoleGUI
         }
         public static bool IsInsideDrawboard((int X, int Y) point)
         {
-            return (point.X >= 1 && point.Y >= 1 && point.X <= XEnd && point.Y <= YEnd) ? true : false;
+            return AreaPoints.Contains(point);
         }
-        public static void At(int X, int Y, ConsoleColor color = ConsoleColor.White)
+        public static void DrawAt(int X, int Y, ConsoleColor color = ConsoleColor.White)
         {
  
             Console.CursorVisible = false;
@@ -55,7 +127,7 @@ namespace ConsoleGUI
             Console.CursorVisible = true;
 
         }
-        public static void At((int X, int Y) point, ConsoleColor color = ConsoleColor.White)
+        public static void DrawAt((int X, int Y) point, ConsoleColor color = ConsoleColor.White)
         {
             Console.CursorVisible = false;
             var cursorPos = SaveCursor();
@@ -70,7 +142,7 @@ namespace ConsoleGUI
             ResetCursor(cursorPos);
             Console.CursorVisible = true;
         }
-        public static void At(List<(int X, int Y)> points, ConsoleColor color = ConsoleColor.White)
+        public static void DrawAt(List<(int X, int Y)> points, ConsoleColor color = ConsoleColor.White)
         {
             Console.CursorVisible = false;
             var cursorPos = SaveCursor();
@@ -98,7 +170,7 @@ namespace ConsoleGUI
 
             var erasePoints = oldPoints.Except(newPoints).ToList();
 
-            At(erasePoints, Console.BackgroundColor);
+            DrawAt(erasePoints, Console.BackgroundColor);
 
             ResetColors(colorSave);
             ResetCursor(cursorPos);
@@ -115,6 +187,8 @@ namespace ConsoleGUI
         }
         
         public static void CharAt(int left, int top, char c = ' ', ConsoleColor foregroundColor = ConsoleColor.White)
+
+
         {
             Console.CursorVisible = false;
             var cursorPos = SaveCursor();
@@ -131,22 +205,31 @@ namespace ConsoleGUI
         public static void StringAt(int left, int top, string prompt)
         {
             Console.CursorVisible = false;
+            var cursorPos = SaveCursor();
+            var colorSave = SaveColors();
 
             Console.SetCursorPosition(left, top);
             Console.WriteLine("                  ");
             Console.SetCursorPosition(left, top);
             Console.WriteLine(prompt);
 
+            ResetColors(colorSave);
+            ResetCursor(cursorPos);
             Console.CursorVisible = true;
         }
         public static void LinesAt(int left, int top, List<string> prompt)
         {
             Console.CursorVisible = false;
+            var cursorPos = SaveCursor();
+            var colorSave = SaveColors();
             for (int i = 0; i < prompt.Count; i++)
             {
                 Console.SetCursorPosition(left, top + i);
                 Console.WriteLine(prompt[i]);
             }
+            ResetColors(colorSave);
+            ResetCursor(cursorPos);
+            Console.CursorVisible = true;
         }
         public static (int X, int Y) SaveCursor()
         {
@@ -159,6 +242,7 @@ namespace ConsoleGUI
             Console.CursorLeft = cursorPosition.X;
             Console.CursorTop = cursorPosition.Y;
         }
+
         
     }
 }

@@ -91,7 +91,19 @@ namespace ConsoleGUI
             }
             return Xs.Count == Ys.Count;
         }
+        public static List<(int X, int Y)> GetAddedPoints(List<(int X, int Y)> oldPoints, List<(int X, int Y)> totalPoints)
+        {
+            var newPoints = new List<(int X, int Y)>();
+            //var Xs = new List<int>();
+            //var Ys = new List<int>();
 
+            //        Xs = Point.ToXs(oldPoints);
+            //        Ys = Point.ToYs(oldPoints);
+            //        Xs = Xs.Select(x => x - 1).ToList();
+            //        newPoints = Point.IntsToPts(Xs, Ys);
+
+            return newPoints;            
+        }
         public static (int X, int Y) FromUser()
         {
             ConsoleKey? key = null;

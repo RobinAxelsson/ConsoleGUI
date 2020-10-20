@@ -189,8 +189,6 @@ namespace ConsoleGUI
 
             return radius;
         }
-
-
-        
+                
     }
 }
