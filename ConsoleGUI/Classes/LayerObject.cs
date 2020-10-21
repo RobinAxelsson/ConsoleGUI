@@ -85,6 +85,15 @@ namespace ConsoleGUI
             GeometricalPoints = GeometricalPoints.Distinct().ToList();
             FillTrue = true;
         }
+        public List<(int X, int Y)> PointGen2(ShapeType shape, (int X, int Y) point1, (int X, int Y) point2)
+        {
+            var points = new List<(int X, int Y)>();
+            if (shape == ShapeType.Rectangle) points = Geometry.RectanglePts(point1, point2);
+            if (shape == ShapeType.Line) points = Geometry.LinePtPt(point1, point2);
+            if (shape == ShapeType.Circle) points = Geometry.CircleWithCenter(point1, point2);
+            return points;
+        }
+
 
     }
 }

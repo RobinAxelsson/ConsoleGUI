@@ -8,11 +8,15 @@ using System.Xml.Linq;
 namespace ConsoleGUI
 {
     using static LayerObject.ShapeType;
-
+    static class Constants
+    {
+        public const int YEnd = 50;
+        public const int XEnd = 150;
+    }
     public class DrawBoard
     {
         public (int X, int Y) StartPoint = (1, 1);
-        public (int X, int Y) EndPoint = (150, 50);
+        public (int X, int Y) EndPoint = (Constants.XEnd, Constants.YEnd);
         public LayerObject Area;
         public static List<(int X, int Y)> AreaPoints;
 
@@ -28,20 +32,57 @@ namespace ConsoleGUI
             
             
         }
-        public (int X, int Y) PointFromCursor()
+        public static (int X, int Y) PointFromCursor(out ConsoleKey key, bool dynamic = false)
         {
-            ConsoleKey? key = null;
+            key = ConsoleKey.Spacebar;
 
-            while (key != ConsoleKey.Enter)
+            if (!dynamic)
+            {
+                while (key != ConsoleKey.Enter)
+                {
+                    key = Console.ReadKey(true).Key;
+                    if (key == ConsoleKey.LeftArrow && Console.CursorLeft >= 1) Console.CursorLeft--;
+                    if (key == ConsoleKey.RightArrow && Console.CursorLeft <= Constants.XEnd) Console.CursorLeft++;
+                    if (key == ConsoleKey.UpArrow && Console.CursorTop >= 1) Console.CursorTop--;
+                    if (key == ConsoleKey.DownArrow && Console.CursorTop <= Constants.YEnd) Console.CursorTop++;
+                }
+           
+            }
+            else
             {
                 key = Console.ReadKey(true).Key;
                 if (key == ConsoleKey.LeftArrow && Console.CursorLeft >= 1) Console.CursorLeft--;
-                if (key == ConsoleKey.RightArrow && Console.CursorLeft <= EndPoint.X) Console.CursorLeft++;
+                if (key == ConsoleKey.RightArrow && Console.CursorLeft <= Constants.XEnd) Console.CursorLeft++;
                 if (key == ConsoleKey.UpArrow && Console.CursorTop >= 1) Console.CursorTop--;
-                if (key == ConsoleKey.DownArrow && Console.CursorTop <= EndPoint.Y) Console.CursorTop++;
+                if (key == ConsoleKey.DownArrow && Console.CursorTop <= Constants.YEnd) Console.CursorTop++;
             }
             return (Console.CursorLeft - 1, Console.CursorTop);
+        }
+        public static (int X, int Y) PointFromCursor(bool dynamic = false)
+        {
+            ConsoleKey? key = null;
 
+            if (!dynamic)
+            {
+                while (key != ConsoleKey.Enter)
+                {
+                    key = Console.ReadKey(true).Key;
+                    if (key == ConsoleKey.LeftArrow && Console.CursorLeft >= 1) Console.CursorLeft--;
+                    if (key == ConsoleKey.RightArrow && Console.CursorLeft <= Constants.XEnd) Console.CursorLeft++;
+                    if (key == ConsoleKey.UpArrow && Console.CursorTop >= 1) Console.CursorTop--;
+                    if (key == ConsoleKey.DownArrow && Console.CursorTop <= Constants.YEnd) Console.CursorTop++;
+                }
+
+            }
+            else
+            {
+                key = Console.ReadKey(true).Key;
+                if (key == ConsoleKey.LeftArrow && Console.CursorLeft >= 1) Console.CursorLeft--;
+                if (key == ConsoleKey.RightArrow && Console.CursorLeft <= Constants.XEnd) Console.CursorLeft++;
+                if (key == ConsoleKey.UpArrow && Console.CursorTop >= 1) Console.CursorTop--;
+                if (key == ConsoleKey.DownArrow && Console.CursorTop <= Constants.YEnd) Console.CursorTop++;
+            }
+            return (Console.CursorLeft - 1, Console.CursorTop);
         }
         public void AreaFrame()
         {
@@ -128,10 +169,12 @@ namespace ConsoleGUI
 
             Console.CursorVisible = true;
         }
+
         public static bool IsInsideDrawboard((int X, int Y) point)
         {
-            return AreaPoints.Contains(point);
+            return (point.X >= 1 && point.Y >= 1 && point.X <= Constants.XEnd && point.Y <= Constants.YEnd) ? true : false;
         }
+
         public static void DrawAt(int X, int Y, ConsoleColor color = ConsoleColor.White)
         {
  
