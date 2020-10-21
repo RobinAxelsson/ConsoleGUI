@@ -29,7 +29,6 @@ namespace ConsoleGUI
             Point1 = point1;
             Point2 = point2;
             GeometricalPoints = PointGen(shape, point1, point2);
-            Color = color;
             NewColor = color;
             var drawPoints = new List<(int X, int Y)>();
             DrawnPoints = drawPoints;

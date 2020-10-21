@@ -9,18 +9,19 @@ namespace ConsoleGUI
     {
         public List<LayerObject> LayerObjects { set; get; }
         public ConsoleColor BackgroundColor = ConsoleColor.Black;
-
+        public LayerObject ActiveObject { get; set; }
         public LayerHandler()
         {
             var layerObjects = new List<LayerObject>();
             LayerObjects = layerObjects;
         }
 
-        public LayerObject CreateLayerObject(LayerObject.ShapeType shape, (int X, int Y) point1, (int X, int Y) point2, ConsoleColor color = ConsoleColor.White)
+        public LayerObject CreateLayerObject(LayerObject.ShapeType shape, (int X, int Y) point1, ConsoleColor color = ConsoleColor.White)
         {
+            var point2 = (point1.X + 5, point1.Y + 3);
             var newObject = new LayerObject(point1, point2, shape, color);
-
             LayerObjects.Add(newObject);
+            ActiveObject = newObject;
             return newObject;
         }
 

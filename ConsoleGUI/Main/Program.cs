@@ -14,6 +14,8 @@ using Microsoft.VisualStudio.TestPlatform.Utilities;
 namespace ConsoleGUI
 {
     using static LayerObject.ShapeType;
+    using static ConsoleColor;
+    using static ConsoleKey;
     public class Program
     {      
 
@@ -22,65 +24,102 @@ namespace ConsoleGUI
             Console.SetWindowSize(Console.LargestWindowWidth, Console.LargestWindowHeight);
             ShowWindow(ThisConsole, MAXIMIZE);
             Console.BufferHeight = Console.WindowHeight + 3;
-            CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;           
-           
+            CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+
+            Console.CursorVisible = false;
             var drawBoard = new DrawBoard();
             var handler = new LayerHandler();
 
+            var prompt = new TextBody((40, 25), "Create your first object. Circle [c], Rectangle [e], Line [l]");
 
-            ConsoleKey? key = null;
+            ConsoleKey key = Console.ReadKey(true).Key;
+            ConsoleKey objectChoiceKey = key;
 
-            while (key != ConsoleKey.Escape)
+            while (key != Escape && key != C && key != E && key != L)
             {
-                TrackCursorNumbers();
+                key = Console.ReadKey(true).Key;
+                objectChoiceKey = key;
             }
+
+            prompt.Erase();
+
+            Console.SetCursorPosition(75, 25);
+
+            (int X, int Y) point1 = drawBoard.PointFromCursor();
+
+            if (objectChoiceKey == C)
+            {
+                handler.CreateLayerObject(Circle, point1);
+            }
+            if (objectChoiceKey == E)
+            {
+                handler.CreateLayerObject(Rectangle, point1);
+            }
+            if (objectChoiceKey == L)
+            {
+                handler.CreateLayerObject(Line, point1);
+            }
+            handler.FilterDraw();
+
+            //while (key != Escape)
+            //{
+            //    if (key == D) handler.ActiveObject.NewColor = Black;
+            //    if (key == W) handler.ActiveObject.NewColor = White;
+            //    if (key == B) handler.ActiveObject.NewColor = Blue;
+            //    if (key == R) handler.ActiveObject.NewColor = Red;
+            //    if (key == ConsoleKey.Y) handler.ActiveObject.NewColor = Yellow;
+            //    if (key == G) handler.ActiveObject.NewColor = Green;
+
+            //    handler.FilterDraw();
+            //}
             Console.SetCursorPosition(150, 1);
+            Console.ReadKey();
         }     
 
 
-        public static ConsoleColor? ColorChoice(ConsoleKey key)
-        {
+        //public static ConsoleColor? ColorChoice(ref ConsoleKey key)
+        //{
 
-            int X = Console.CursorLeft;
-            int Y = Console.CursorTop;
-            Console.CursorVisible = false;
+        //    int X = Console.CursorLeft;
+        //    int Y = Console.CursorTop;
+        //    Console.CursorVisible = false;
 
             
 
-            Console.CursorLeft = X;
-            Console.CursorTop = Y;
-            Console.CursorVisible = true;
+        //    Console.CursorLeft = X;
+        //    Console.CursorTop = Y;
+        //    Console.CursorVisible = true;
 
-            if (key == ConsoleKey.W) return ConsoleColor.White;
-            if (key == ConsoleKey.D) return ConsoleColor.Black;
-            if (key == ConsoleKey.B) return ConsoleColor.Blue;
-            if (key == ConsoleKey.R) return ConsoleColor.Red;
-            if (key == ConsoleKey.Y) return ConsoleColor.Yellow;
-            if (key == ConsoleKey.G) return ConsoleColor.Green;
-            else return null;
-        }
-        public static void TrackCursorNumbers()
-        {
+        //    if (key == W) return White;
+        //    if (key == D) return Black;
+        //    if (key == B) return Blue;
+        //    if (key == R) return Red;
+        //    if (key == ConsoleKey.Y) return Yellow;
+        //    if (key == G) return Green;
 
-            ConsoleKey? key = null;
+        //}
+        //public static void TrackCursorNumbers()
+        //{
 
-            int left; int top;
+        //    ConsoleKey? key = null;
 
-            while (key != ConsoleKey.Enter)
-            {
-                left = Console.CursorLeft;
-                top = Console.CursorTop;
-                DrawBoard.StringAt(2, 60, $"{left}, {top}");
-                Console.SetCursorPosition(left, top);
+        //    int left; int top;
 
-                key = Console.ReadKey(true).Key;
+        //    while (key != ConsoleKey.Enter)
+        //    {
+        //        left = Console.CursorLeft;
+        //        top = Console.CursorTop;
+        //        drawBoard.StringAt(2, 60, $"{left}, {top}");
+        //        Console.SetCursorPosition(left, top);
 
-                if (key == ConsoleKey.LeftArrow && Console.CursorLeft > 0) Console.CursorLeft--;
-                if (key == ConsoleKey.RightArrow && Console.CursorLeft <= Console.BufferWidth - 1) Console.CursorLeft++;
-                if (key == ConsoleKey.UpArrow && Console.CursorTop > 0) Console.CursorTop--;
-                if (key == ConsoleKey.DownArrow) Console.CursorTop++;
-            }
-        }
+        //        key = Console.ReadKey(true).Key;
+
+        //        if (key == ConsoleKey.LeftArrow && Console.CursorLeft > 0) Console.CursorLeft--;
+        //        if (key == ConsoleKey.RightArrow && Console.CursorLeft <= Console.BufferWidth - 1) Console.CursorLeft++;
+        //        if (key == ConsoleKey.UpArrow && Console.CursorTop > 0) Console.CursorTop--;
+        //        if (key == ConsoleKey.DownArrow) Console.CursorTop++;
+        //    }
+        //}
         [DllImport("kernel32.dll", ExactSpelling = true)]
         private static extern IntPtr GetConsoleWindow();
         private static IntPtr ThisConsole = GetConsoleWindow();

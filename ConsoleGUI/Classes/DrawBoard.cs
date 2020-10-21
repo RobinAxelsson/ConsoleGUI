@@ -8,23 +8,67 @@ using System.Xml.Linq;
 namespace ConsoleGUI
 {
     using static LayerObject.ShapeType;
+
     public class DrawBoard
     {
         public (int X, int Y) StartPoint = (1, 1);
         public (int X, int Y) EndPoint = (150, 50);
         public LayerObject Area;
         public static List<(int X, int Y)> AreaPoints;
+
         public DrawBoard()
         {           
-
             var area = new LayerObject(StartPoint, EndPoint, Rectangle);
             Area = area;
             AreaPoints = area.GeometricalPoints;
             //Console.BufferHeight = Console.WindowHeight +3;
-            DrawFrame();
+            AreaFrame();
             BufferFrame();
-            Console.SetCursorPosition(75, 25);
+            KeyOptions();
+            
+            
+        }
+        public (int X, int Y) PointFromCursor()
+        {
+            ConsoleKey? key = null;
 
+            while (key != ConsoleKey.Enter)
+            {
+                key = Console.ReadKey(true).Key;
+                if (key == ConsoleKey.LeftArrow && Console.CursorLeft >= 1) Console.CursorLeft--;
+                if (key == ConsoleKey.RightArrow && Console.CursorLeft <= EndPoint.X) Console.CursorLeft++;
+                if (key == ConsoleKey.UpArrow && Console.CursorTop >= 1) Console.CursorTop--;
+                if (key == ConsoleKey.DownArrow && Console.CursorTop <= EndPoint.Y) Console.CursorTop++;
+            }
+            return (Console.CursorLeft - 1, Console.CursorTop);
+
+        }
+        public void AreaFrame()
+        {
+
+            int Width = EndPoint.X + 1;
+            int Height = EndPoint.Y + 1;
+
+            for (int i = 1; i <= Width; i++)
+            {
+                CharAt(i, 0, '─');
+                CharAt(i, (Height), '─');
+            }
+            for (int i = 1; i <= (Height); i++)
+            {
+                CharAt(0, i, '│');
+                CharAt((Width), i, '│');
+            }
+
+            CharAt(0, 0, '┌');
+            CharAt((Width), 0, '┐');
+            CharAt(0, (Height), '└');
+            CharAt((Width), (Height), '┘');
+
+            Console.CursorVisible = true;
+        }
+        public void KeyOptions()
+        {
             var coloroptions = new List<string>
             {
                 "Press Hotkeys[hotkey]",
@@ -49,36 +93,15 @@ namespace ConsoleGUI
                 "Move [m]",
                 "Fill/Unfill [f]",
                 "Rescale [s]",
-                "Move object forward [+]",
-                "Move object backwards [-]"
+                "Move object up stack [+]",
+                "Move object back [-]",
+                "Name [n]",
+                "",
+                "Change Object[Tab]",
+                "",
             };
 
             LinesAt(159, 2, coloroptions);
-            
-        }
-        public void DrawFrame()
-        {
-
-            int Width = EndPoint.X + 1;
-            int Height = EndPoint.Y + 1;
-
-            for (int i = 1; i <= Width; i++)
-            {
-                CharAt(i, 0, '─');
-                CharAt(i, (Height), '─');
-            }
-            for (int i = 1; i <= (Height); i++)
-            {
-                CharAt(0, i, '│');
-                CharAt((Width), i, '│');
-            }
-
-            CharAt(0, 0, '┌');
-            CharAt((Width), 0, '┐');
-            CharAt(0, (Height), '└');
-            CharAt((Width), (Height), '┘');
-
-            Console.CursorVisible = true;
         }
 
         public void BufferFrame()
@@ -202,7 +225,7 @@ namespace ConsoleGUI
             ResetCursor(cursorPos);
 
         }
-        public static void StringAt(int left, int top, string prompt)
+        public void StringAt(int left, int top, string prompt)
         {
             Console.CursorVisible = false;
             var cursorPos = SaveCursor();
