@@ -22,14 +22,9 @@ namespace ConsoleGUI
 
         public DrawBoard()
         {           
-            var area = new LayerObject(StartPoint, EndPoint, Rectangle);
-            Area = area;
-            AreaPoints = area.GeometricalPoints;
-            //Console.BufferHeight = Console.WindowHeight +3;
             AreaFrame();
             BufferFrame();
-            KeyOptions();
-            
+            KeyOptions();          
             
         }
         public static (int X, int Y) PointFromCursor(out ConsoleKey key, bool dynamic = false)

@@ -30,121 +30,133 @@ namespace ConsoleGUI
             var drawBoard = new DrawBoard();
             var handler = new LayerHandler();
             (int X, int Y) point1;
-            var prompt = new TextBody((40, 25), "Create your first object. Circle [c], Rectangle [e], Line [l]");
+            //var prompt = new TextBody((40, 25), "Create your first object. Circle [c], Rectangle [e], Line [l]");
 
-            ConsoleKey key = Console.ReadKey(true).Key;
-            ConsoleKey objectChoiceKey = key;
+            //ConsoleKey key = Console.ReadKey(true).Key;
+            //ConsoleKey objectChoiceKey = key;
 
-            while (key != Escape && key != C && key != E && key != L)
-            {
-                key = Console.ReadKey(true).Key;
-                objectChoiceKey = key;
-            }
+            //while (key != Escape && key != C && key != E && key != L)
+            //{
+            //    key = Console.ReadKey(true).Key;
+            //    objectChoiceKey = key;
+            //}
 
-            prompt.Erase();
-
-            Console.SetCursorPosition(75, 25);
-
-            point1 = DrawBoard.PointFromCursor();
-
-
-            if (objectChoiceKey == C)
-            {
-                handler.CreateLayerObject(Circle, point1);
-            }
-            if (objectChoiceKey == E)
-            {
-                handler.CreateLayerObject(Rectangle, point1);
-            }
-            if (objectChoiceKey == L)
-            {
-                handler.CreateLayerObject(Line, point1);
-            }
-
-            while (key != Enter)
-            {
-
-            handler.ScaleActiveObject(DrawBoard.PointFromCursor(out key, true));
-            }
-            key = Spacebar;
-
-            while (key != Enter)
-            {
-                handler.MoveActiveObject(out key);
-            }
-            key = Spacebar;
-
-            while (key != Enter)
-            { 
-
-                if (key == D) handler.ActiveObject.NewColor = Black;
-                if (key == W) handler.ActiveObject.NewColor = White;
-                if (key == B) handler.ActiveObject.NewColor = Blue;
-                if (key == R) handler.ActiveObject.NewColor = Red;
-                if (key == ConsoleKey.Y) handler.ActiveObject.NewColor = Yellow;
-                if (key == G) handler.ActiveObject.NewColor = Green;
-
-                handler.ActiveObject.Fill();
-                handler.FilterDraw();
-                key = Console.ReadKey(true).Key;
-            }
-            Console.SetCursorPosition(150, 1);
-
-            var prompt2 = new TextBody((40, 50), "Create second. Circle [c], Rectangle [e], Line [l]");
-
-            while (key != Escape && key != C && key != E && key != L)
-            {
-                key = Console.ReadKey(true).Key;
-                objectChoiceKey = key;
-            }
-
-            prompt2.Erase();
+            //prompt.Erase();
 
             Console.SetCursorPosition(75, 25);
 
-            point1 = DrawBoard.PointFromCursor();
+
+            var blueRectangle = handler.CreateLayerObject(Rectangle, (5, 5), (15, 15), Blue);
+            var redRectangle = handler.CreateLayerObject(Rectangle, (7, 7), (15, 15), Red);
+            handler.ActiveObject = blueRectangle;
+            handler.MoveActiveObject(2, 2);
+            handler.MoveActiveObject(2, 2);
+            handler.MoveActiveObject(2, 2);
+            //handler.ActiveObject = redRectangle;
+            //handler.MoveActiveObject(2, 2);
+            //handler.MoveActiveObject(2, 2);
+            //handler.MoveActiveObject(2, 2);
+
+            //point1 = DrawBoard.PointFromCursor();
 
 
-            if (objectChoiceKey == C)
-            {
-                handler.CreateLayerObject(Circle, point1);
-            }
-            if (objectChoiceKey == E)
-            {
-                handler.CreateLayerObject(Rectangle, point1);
-            }
-            if (objectChoiceKey == L)
-            {
-                handler.CreateLayerObject(Line, point1);
-            }
+            //if (objectChoiceKey == C)
+            //{
+            //    handler.CreateLayerObject(Circle, point1);
+            //}
+            //if (objectChoiceKey == E)
+            //{
+            //    handler.CreateLayerObject(Rectangle, point1);
+            //}
+            //if (objectChoiceKey == L)
+            //{
+            //    handler.CreateLayerObject(Line, point1);
+            //}
 
-            while (key != Enter)
-            {
+            //while (key != Enter)
+            //{
 
-                handler.ScaleActiveObject(DrawBoard.PointFromCursor(out key, true));
-            }
-            key = Spacebar;
+            //handler.ScaleActiveObject(DrawBoard.PointFromCursor(out key, true));
+            //}
+            //key = Spacebar;
 
-            while (key != Enter)
-            {
-                handler.MoveActiveObject(out key);
-            }
-            key = Spacebar;
+            //while (key != Enter)
+            //{
+            //    handler.MoveActiveObject(out key);
+            //}
+            //key = Spacebar;
 
-            while (key != Enter)
-            {
+            //while (key != Enter)
+            //{ 
 
-                if (key == D) handler.ActiveObject.NewColor = Black;
-                if (key == W) handler.ActiveObject.NewColor = White;
-                if (key == B) handler.ActiveObject.NewColor = Blue;
-                if (key == R) handler.ActiveObject.NewColor = Red;
-                if (key == ConsoleKey.Y) handler.ActiveObject.NewColor = Yellow;
-                if (key == G) handler.ActiveObject.NewColor = Green;
+            //    if (key == D) handler.ActiveObject.NewColor = Black;
+            //    if (key == W) handler.ActiveObject.NewColor = White;
+            //    if (key == B) handler.ActiveObject.NewColor = Blue;
+            //    if (key == R) handler.ActiveObject.NewColor = Red;
+            //    if (key == ConsoleKey.Y) handler.ActiveObject.NewColor = Yellow;
+            //    if (key == G) handler.ActiveObject.NewColor = Green;
 
-                handler.ActiveObject.Fill();
-                handler.FilterDraw();
-                key = Console.ReadKey(true).Key;
-            }
+            //    handler.ActiveObject.Fill();
+
+            //    key = Console.ReadKey(true).Key;
+            //}
+            //Console.SetCursorPosition(150, 1);
+
+            //var prompt2 = new TextBody((40, 50), "Create second. Circle [c], Rectangle [e], Line [l]");
+
+            //while (key != Escape && key != C && key != E && key != L)
+            //{
+            //    key = Console.ReadKey(true).Key;
+            //    objectChoiceKey = key;
+            //}
+
+            //prompt2.Erase();
+
+            //Console.SetCursorPosition(75, 25);
+
+            //point1 = DrawBoard.PointFromCursor();
+
+
+            //if (objectChoiceKey == C)
+            //{
+            //    handler.CreateLayerObject(Circle, point1);
+            //}
+            //if (objectChoiceKey == E)
+            //{
+            //    handler.CreateLayerObject(Rectangle, point1);
+            //}
+            //if (objectChoiceKey == L)
+            //{
+            //    handler.CreateLayerObject(Line, point1);
+            //}
+
+            //while (key != Enter)
+            //{
+
+            //    handler.ScaleActiveObject(DrawBoard.PointFromCursor(out key, true));
+            //}
+            //key = Spacebar;
+
+            //while (key != Enter)
+            //{
+            //    handler.MoveActiveObject(out key);
+            //}
+            //key = Spacebar;
+
+            //while (key != Enter)
+            //{
+
+            //    if (key == D) handler.ActiveObject.NewColor = Black;
+            //    if (key == W) handler.ActiveObject.NewColor = White;
+            //    if (key == B) handler.ActiveObject.NewColor = Blue;
+            //    if (key == R) handler.ActiveObject.NewColor = Red;
+            //    if (key == ConsoleKey.Y) handler.ActiveObject.NewColor = Yellow;
+            //    if (key == G) handler.ActiveObject.NewColor = Green;
+
+            //    handler.ActiveObject.Fill();
+            //    key = Console.ReadKey(true).Key;
+            //}
+            Console.ReadKey();
         }     
 
 

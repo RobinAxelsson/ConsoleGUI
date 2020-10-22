@@ -14,11 +14,10 @@ namespace ConsoleGUI
             Circle
         }
 
-        public List<(int X, int Y)> GeometricalPoints;
-        public List<(int X, int Y)> DrawnPoints;
+        public List<(int X, int Y)> DrawPoints;
         public ShapeType Shape { get; set; }
         public ConsoleColor Color { get; set; } = ConsoleColor.White;
-        public ConsoleColor NewColor { get; set; }
+        public ConsoleColor? NewColor { get; set; } = null;
         public (int X, int Y) Point1;
         public (int X, int Y) Point2;
         public bool FillTrue;
@@ -28,12 +27,22 @@ namespace ConsoleGUI
             Shape = shape;
             Point1 = point1;
             Point2 = point2;
-            GeometricalPoints = PointGen(shape, point1, point2);
-            NewColor = color;
-            var drawPoints = new List<(int X, int Y)>();
-            DrawnPoints = drawPoints;
+            Color = color;
+            FillTrue = false;
+            DrawPoints = new List<(int X, int Y)>();
         }
 
+        public List<(int X, int Y)> TruePoints()
+        {
+            var truePoints = new List<(int X, int Y)>();
+
+            if (Shape == ShapeType.Rectangle) truePoints = Geometry.RectanglePts(Point1, Point2);
+            if (Shape == ShapeType.Line) truePoints = Geometry.LinePtPt(Point1, Point2);
+            if (Shape == ShapeType.Circle) truePoints = Geometry.CircleWithCenter(Point1, Point2);
+            if (FillTrue) { Fill(ref truePoints); }
+
+            return truePoints;
+        }
         public List<(int X, int Y)> PointGen(ShapeType shape, (int X, int Y) point1, (int X, int Y) point2)
         {
             var points = new List<(int X, int Y)>();
@@ -43,14 +52,9 @@ namespace ConsoleGUI
             return points;
         }
 
-        public void UnFill()
+        public void Fill(ref List<(int X, int Y)> truePoints)
         {
-            GeometricalPoints = PointGen(Shape, Point1, Point2);
-            FillTrue = false;
-        }
-        public void Fill()
-        {
-            var Ys = Point.ToYs(GeometricalPoints);
+            var Ys = Point.ToYs(truePoints);
 
             int Ymin = Ys.Min();
             int Ymax = Ys.Max();
@@ -60,7 +64,7 @@ namespace ConsoleGUI
             for (int i = Ymin; i <= Ymax; i++)
             {
                 var newList = new List<(int X, int Y)>();
-                newList = GeometricalPoints.Where(p => p.Y == i).ToList();
+                newList = truePoints.Where(p => p.Y == i).ToList();
                 yLevels.Add(newList);
             }
 
@@ -79,10 +83,48 @@ namespace ConsoleGUI
                 for (int x = Xmin; x < Xmax; x++)
                 {
                     y = level[0].Y;
-                    GeometricalPoints.Add((x, y));
+                    truePoints.Add((x, y));
                 }
             }
-            GeometricalPoints = GeometricalPoints.Distinct().ToList();
+            truePoints = truePoints.Distinct().ToList();
+        }
+        public void Fill()
+        {
+
+            var truePoints = TruePoints();
+            var Ys = Point.ToYs(truePoints);
+
+            int Ymin = Ys.Min();
+            int Ymax = Ys.Max();
+
+            var yLevels = new List<List<(int X, int Y)>>();
+
+            for (int i = Ymin; i <= Ymax; i++)
+            {
+                var newList = new List<(int X, int Y)>();
+                newList = truePoints.Where(p => p.Y == i).ToList();
+                yLevels.Add(newList);
+            }
+
+            int Xmin;
+            int Xmax;
+            var pointsTemp = new List<(int X, int Y)>();
+            var Xs = new List<int>();
+            int y;
+
+            foreach (var level in yLevels)
+            {
+                Xs = Point.ToXs(level);
+                Xmin = Xs.Min();
+                Xmax = Xs.Max();
+
+                for (int x = Xmin; x < Xmax; x++)
+                {
+                    y = level[0].Y;
+                    truePoints.Add((x, y));
+                }
+            }
+            truePoints = truePoints.Distinct().ToList();
             FillTrue = true;
         }
         public List<(int X, int Y)> PointGen2(ShapeType shape, (int X, int Y) point1, (int X, int Y) point2)
