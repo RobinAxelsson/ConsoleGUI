@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -21,9 +22,9 @@ namespace ConsoleGUI
         public static List<(int X, int Y)> AreaPoints;
 
         public DrawBoard()
-        {           
-            AreaFrame();
-            BufferFrame();
+        {
+            Grid(1, 1);
+            //BufferFrame();
             KeyOptions();          
             
         }
@@ -79,11 +80,142 @@ namespace ConsoleGUI
             }
             return (Console.CursorLeft - 1, Console.CursorTop);
         }
-        public void AreaFrame()
+        public void AreaFrame(bool CrossTrue)
         {
 
             int Width = EndPoint.X + 1;
             int Height = EndPoint.Y + 1;
+            int middleY = Height / 2;
+            int middleX = Width / 2;
+
+            for (int i = 1; i <= Width; i++)
+            {
+                CharAt(i, 0, '─');
+                CharAt(i, (Height), '─');
+            }
+
+
+            for (int i = 1; i <= (Height); i++)
+            {
+                CharAt(0, i, '│');
+                CharAt((Width), i, '│');
+            }
+
+            CharAt(0, 0, '┌');
+            CharAt((Width), 0, '┐');
+            CharAt(0, (Height), '└');
+            CharAt((Width), (Height), '┘');
+
+            Console.CursorVisible = true;
+        }
+        public static void Grid(int rows, int columns)        
+        {
+            (int X, int Y) startPoint = (0, 0);
+            (int X, int Y) endPoint = (Constants.XEnd+1, Constants.YEnd+1);
+
+            var rowPoints = new List<(int X, int Y)>();
+            var columnPoints = new List<(int X, int Y)>();
+            var pointsDebug = new List<(int X, int Y)>();
+            decimal quota;
+            int removeValue;
+
+
+            for (int i = 0; i <= rows; i++)
+            {
+                decimal rowQuota = i / (decimal)rows;
+                int yValue;
+                for (int j = startPoint.X; j <= endPoint.X; j++)
+                {
+                    yValue = (int)Math.Round((endPoint.Y * rowQuota));
+                    rowPoints.Add((j, yValue));
+                }
+                pointsDebug.Clear();
+            }
+            
+            for (int i = 0; i <= columns; i++)
+            {
+                decimal columnQuota;
+                int xValue;
+                columnQuota = i / (decimal)columns;
+
+                for (int j = startPoint.Y; j <= endPoint.Y; j++)
+                {
+                    xValue = (int)Math.Round((endPoint.X * columnQuota));
+                    columnPoints.Add((xValue, j));
+                }
+
+
+                pointsDebug.Clear();
+            }
+            var intersectingPoints = rowPoints.Intersect(columnPoints).ToList();
+            CharAt(rowPoints, '─');
+            CharAt(columnPoints, '│');
+            CharAt(intersectingPoints, '\u0004');
+
+            CharAt(startPoint, '┌');
+            CharAt((endPoint.X, startPoint.Y), '┐');
+            CharAt((startPoint.X, endPoint.Y), '└');
+            CharAt(endPoint, '┘');
+        }
+        public void AreaFrame()
+        {
+            var points = new List<(int X, int Y)>();
+            int Width = EndPoint.X + 1;
+            int Height = EndPoint.Y + 1;
+            int lengthX = Width-1;
+            int lengthY = Height;
+            int middleX = Width / 2;
+            int middleY = Height / 2;
+
+            for (int i = 1; i < lengthX; i++)
+            {
+                points.Add((i, middleY));
+            }
+            points.RemoveAll(p => p.X == middleX && p.Y == middleY);
+            CharAt(points, '─');
+            points.Clear();
+
+            for (int i = 1; i < lengthX; i++)
+            {
+                points.Add((i, middleY/2));
+            }
+            points.RemoveAll(p => p.X == middleX && p.Y == middleY);
+            CharAt(points, '─');
+            points.Clear();
+
+            for (int i = 1; i < lengthX; i++)
+            {
+                points.Add((i, middleY * 3 / 2));
+            }
+            points.RemoveAll(p => p.X == middleX && p.Y == middleY);
+            CharAt(points, '─');
+            points.Clear();
+
+            for (int i = 1; i < lengthY; i++)
+            {
+                points.Add((middleX, i));
+            }
+            points.RemoveAll(p => p.X == middleX && p.Y == middleY);
+            CharAt(points, '│');
+            points.Clear();
+
+            for (int i = 1; i < lengthY; i++)
+            {
+                points.Add((middleX/2, i));
+            }
+            points.RemoveAll(p => p.X == middleX && p.Y == middleY);
+            CharAt(points, '│');
+            points.Clear();
+
+            for (int i = 1; i < lengthY; i++)
+            {
+                points.Add((middleX * 3 / 2, i));
+            }
+            points.RemoveAll(p => p.X == middleX && p.Y == middleY);
+            CharAt(points, '│');
+            points.Clear();
+
+
 
             for (int i = 1; i <= Width; i++)
             {
@@ -261,6 +393,40 @@ namespace ConsoleGUI
 
             ResetColors(colorSave);
             ResetCursor(cursorPos);
+
+        }
+        public static void CharAt((int X, int Y) point, char c = ' ', ConsoleColor foregroundColor = ConsoleColor.White)
+
+
+        {
+            Console.CursorVisible = false;
+            var cursorPos = SaveCursor();
+            var colorSave = SaveColors();
+
+            Console.ForegroundColor = foregroundColor;
+            Console.SetCursorPosition(point.X, point.Y);
+            Console.Write(c);
+
+            ResetColors(colorSave);
+            ResetCursor(cursorPos);
+
+        }
+        public static void CharAt(List<(int X, int Y)> points, char c = ' ', ConsoleColor foregroundColor = ConsoleColor.White)
+        {
+            Console.CursorVisible = false;
+            var cursorPos = SaveCursor();
+            var colorSave = SaveColors();
+
+            Console.ForegroundColor = foregroundColor;
+            foreach (var point in points)
+            {
+            Console.SetCursorPosition(point.X, point.Y);
+            Console.Write(c);
+            }
+
+            ResetColors(colorSave);
+            ResetCursor(cursorPos);
+            Console.CursorVisible = true;
 
         }
         public void StringAt(int left, int top, string prompt)

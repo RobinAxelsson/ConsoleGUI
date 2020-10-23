@@ -27,6 +27,10 @@ namespace ConsoleGUI
             CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
             Console.CursorVisible = false;
+
+            DrawBoard.Grid(15, 10);
+            Console.ReadKey();
+            /*
             var drawBoard = new DrawBoard();
             var handler = new LayerHandler();
             (int X, int Y) point1;
@@ -153,7 +157,7 @@ namespace ConsoleGUI
                 handler.ActiveObject.Fill();
                 key = Console.ReadKey(true).Key;
             }
-            Console.ReadKey();
+            Console.ReadKey();*/
         }     
 
 
