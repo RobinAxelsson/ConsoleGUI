@@ -9,7 +9,7 @@ using System.Xml.Linq;
 
 namespace ConsoleGUI
 {
-    using static LayerObject.ShapeType;
+    //using static LayerObject.ShapeType;
     static class Constants //This is the drawingArea - the frame is bigger.
     {
         //Largest windowwidth = 200

@@ -195,7 +195,9 @@ namespace ConsoleGUI
     {
         public (int X, int Y) Point1;
         public (int X, int Y) Point2;
-        ConsoleColor Color;
-        bool Fill;
+        public ConsoleColor Color;
+        public bool Fill;
+        public ShapeObject()
+        { }
     }
 }
