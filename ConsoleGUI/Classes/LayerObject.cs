@@ -53,9 +53,9 @@ namespace ConsoleGUI
         {
             var truePoints = new List<(int X, int Y)>();
 
-            if (Shape == ShapeType.Rectangle) truePoints = Geometry.RectanglePts(Point1, Point2);
-            if (Shape == ShapeType.Line) truePoints = Geometry.LinePtPt(Point1, Point2);
-            if (Shape == ShapeType.Circle) truePoints = Geometry.CircleWithCenter(Point1, Point2);
+            if (Shape == ShapeType.Rectangle) truePoints = ShapeObject.RectanglePts(Point1, Point2);
+            if (Shape == ShapeType.Line) truePoints = ShapeObject.LinePtPt(Point1, Point2);
+            if (Shape == ShapeType.Circle) truePoints = ShapeObject.CircleWithCenter(Point1, Point2);
             if (FillTrue) { Fill(ref truePoints); }
 
             return truePoints;
@@ -64,9 +64,9 @@ namespace ConsoleGUI
         {
             var truePoints = new List<(int X, int Y)>();
 
-            if (Shape == ShapeType.Rectangle) truePoints = Geometry.RectanglePts(Point1, Point2);
-            if (Shape == ShapeType.Line) truePoints = Geometry.LinePtPt(Point1, Point2);
-            if (Shape == ShapeType.Circle) truePoints = Geometry.CircleWithCenter(Point1, Point2);
+            if (Shape == ShapeType.Rectangle) truePoints = ShapeObject.RectanglePts(Point1, Point2);
+            if (Shape == ShapeType.Line) truePoints = ShapeObject.LinePtPt(Point1, Point2);
+            if (Shape == ShapeType.Circle) truePoints = ShapeObject.CircleWithCenter(Point1, Point2);
             if (FillTrue) { Fill(ref truePoints); }
 
             return truePoints;
@@ -74,9 +74,9 @@ namespace ConsoleGUI
         public List<(int X, int Y)> PointGen(ShapeType shape, (int X, int Y) point1, (int X, int Y) point2)
         {
             var points = new List<(int X, int Y)>();
-            if (shape == ShapeType.Rectangle) points = Geometry.RectanglePts(point1, point2);
-            if (shape == ShapeType.Line) points = Geometry.LinePtPt(point1, point2);
-            if (shape == ShapeType.Circle) points = Geometry.CircleWithCenter(point1, point2);
+            if (shape == ShapeType.Rectangle) points = ShapeObject.RectanglePts(point1, point2);
+            if (shape == ShapeType.Line) points = ShapeObject.LinePtPt(point1, point2);
+            if (shape == ShapeType.Circle) points = ShapeObject.CircleWithCenter(point1, point2);
             return points;
         }
 
@@ -158,9 +158,9 @@ namespace ConsoleGUI
         public List<(int X, int Y)> PointGen2(ShapeType shape, (int X, int Y) point1, (int X, int Y) point2)
         {
             var points = new List<(int X, int Y)>();
-            if (shape == ShapeType.Rectangle) points = Geometry.RectanglePts(point1, point2);
-            if (shape == ShapeType.Line) points = Geometry.LinePtPt(point1, point2);
-            if (shape == ShapeType.Circle) points = Geometry.CircleWithCenter(point1, point2);
+            if (shape == ShapeType.Rectangle) points = ShapeObject.RectanglePts(point1, point2);
+            if (shape == ShapeType.Line) points = ShapeObject.LinePtPt(point1, point2);
+            if (shape == ShapeType.Circle) points = ShapeObject.CircleWithCenter(point1, point2);
             return points;
         }
 

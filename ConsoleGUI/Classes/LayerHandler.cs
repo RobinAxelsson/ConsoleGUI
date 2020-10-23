@@ -42,9 +42,9 @@ namespace ConsoleGUI
             (int X, int Y) point1 = (x1, y1);
             (int X, int Y) point2 = (x2, y2);
 
-            if (shape == Rectangle) newGeometricalPoints = Geometry.RectanglePts(point1, point2);
-            if (shape == Line) newGeometricalPoints = Geometry.LinePtPt(point1, point2);
-            if (shape == Circle) newGeometricalPoints = Geometry.CircleWithCenter(point1, point2);
+            if (shape == Rectangle) newGeometricalPoints = ShapeObject.RectanglePts(point1, point2);
+            if (shape == Line) newGeometricalPoints = ShapeObject.LinePtPt(point1, point2);
+            if (shape == Circle) newGeometricalPoints = ShapeObject.CircleWithCenter(point1, point2);
 
             Refresh(newGeometricalPoints);
 
@@ -76,9 +76,9 @@ namespace ConsoleGUI
             (int X, int Y) point1 = (x1, y1);
             (int X, int Y) point2 = (x2, y2);
 
-            if (shape == Rectangle) newGeometricalPoints = Geometry.RectanglePts(point1, point2);
-            if (shape == Line) newGeometricalPoints = Geometry.LinePtPt(point1, point2);
-            if (shape == Circle) newGeometricalPoints = Geometry.CircleWithCenter(point1, point2);
+            if (shape == Rectangle) newGeometricalPoints = ShapeObject.RectanglePts(point1, point2);
+            if (shape == Line) newGeometricalPoints = ShapeObject.LinePtPt(point1, point2);
+            if (shape == Circle) newGeometricalPoints = ShapeObject.CircleWithCenter(point1, point2);
 
             if (ActiveObject.FillTrue)
             {
@@ -98,9 +98,9 @@ namespace ConsoleGUI
 
             var newGeometricalPoints = new List<(int X, int Y)>();
 
-            if (shape == Rectangle) newGeometricalPoints = Geometry.RectanglePts(point1, point2);
-            if (shape == Line) newGeometricalPoints = Geometry.LinePtPt(point1, point2);
-            if (shape == Circle) newGeometricalPoints = Geometry.CircleWithCenter(point1, point2);
+            if (shape == Rectangle) newGeometricalPoints = ShapeObject.RectanglePts(point1, point2);
+            if (shape == Line) newGeometricalPoints = ShapeObject.LinePtPt(point1, point2);
+            if (shape == Circle) newGeometricalPoints = ShapeObject.CircleWithCenter(point1, point2);
 
             if (filltrue)
             {

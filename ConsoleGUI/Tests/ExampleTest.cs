@@ -41,7 +41,7 @@ namespace ConsoleGUI
             (int X, int Y) point1 = (X1, Y1);
             (int X, int Y) point2 = (X2, Y2);
 
-            var points = Geometry.CircleWithCenter(point1, point2);
+            var points = ShapeObject.CircleWithCenter(point1, point2);
 
         }
         [TestMethod]
@@ -50,7 +50,7 @@ namespace ConsoleGUI
             double radius = 10;
             var Xs = new List<double>();
             var Ys = new List<double>();
-            Geometry.CircleEdgeXYsDouble(out Xs, out Ys, radius);
+            ShapeObject.CircleEdgeXYsDouble(out Xs, out Ys, radius);
 
 
         }

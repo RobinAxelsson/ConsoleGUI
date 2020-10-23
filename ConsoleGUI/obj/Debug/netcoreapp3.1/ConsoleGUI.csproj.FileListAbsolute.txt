@@ -92,3 +92,4 @@ C:\Users\Anv\source\repos\AbstractionLessson16\ConsoleGUI\obj\Debug\netcoreapp3.
 C:\Users\Anv\source\repos\AbstractionLessson16\ConsoleGUI\obj\Debug\netcoreapp3.1\ConsoleGUI.dll
 C:\Users\Anv\source\repos\AbstractionLessson16\ConsoleGUI\obj\Debug\netcoreapp3.1\ConsoleGUI.pdb
 C:\Users\Anv\source\repos\AbstractionLessson16\ConsoleGUI\obj\Debug\netcoreapp3.1\ConsoleGUI.genruntimeconfig.cache
+C:\Users\Anv\source\repos\AbstractionLessson16\ConsoleGUI\obj\Debug\netcoreapp3.1\ConsoleGUI.csprojAssemblyReference.cache
