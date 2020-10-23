@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Xml.Linq;
@@ -9,24 +10,60 @@ using System.Xml.Linq;
 namespace ConsoleGUI
 {
     using static LayerObject.ShapeType;
-    static class Constants
+    static class Constants //This is the drawingArea - the frame is bigger.
     {
-        public const int YEnd = 50;
+        //Largest windowwidth = 200
+        //Largest windowheight = 71
+
+        public const int XStart = 5;
+        public const int YStart = 3; 
         public const int XEnd = 150;
+        public const int YEnd = 60;
     }
+    public class CharPoint
+    {
+        public (int X, int Y) Point;
+        public char Character;
+        public ConsoleColor ForegroundColor = ConsoleColor.DarkGray;
+
+        public CharPoint((int X, int Y) point, char character, ConsoleColor foregroundColor = ConsoleColor.DarkGray)
+        {
+            Point = point;
+            Character = character;
+            ForegroundColor = foregroundColor;
+        }
+        public void Draw(ConsoleColor backgroundcolor = ConsoleColor.Black)
+        {
+            DrawBoard.CharAt(Point, Character, ForegroundColor, backgroundcolor);
+        }
+    }
+
+
     public class DrawBoard
     {
-        public (int X, int Y) StartPoint = (1, 1);
+        public (int X, int Y) StartPoint = (Constants.XStart, Constants.YStart);
         public (int X, int Y) EndPoint = (Constants.XEnd, Constants.YEnd);
-        public LayerObject Area;
-        public static List<(int X, int Y)> AreaPoints;
+        public List<CharPoint> CharPoints;
 
         public DrawBoard()
         {
-            Grid(1, 1);
-            //BufferFrame();
-            KeyOptions();          
-            
+            var charPoints = new List<CharPoint>();
+            CharPoints = charPoints;
+        }
+        public void newCharPoint(List<(int X, int Y)> points, char character, ConsoleColor foregroundColor = ConsoleColor.DarkGray)
+        {
+            foreach (var p in points)
+            {
+            var charPoint = new CharPoint(p, character, foregroundColor);
+            CharPoints.Add(charPoint);
+            charPoint.Draw();
+            }
+        }
+        public void newCharPoint((int X, int Y) point, char character, ConsoleColor foregroundColor = ConsoleColor.DarkGray)
+        {
+            var charPoint = new CharPoint(point, character, foregroundColor);
+            CharPoints.Add(charPoint);
+            charPoint.Draw();
         }
         public static (int X, int Y) PointFromCursor(out ConsoleKey key, bool dynamic = false)
         {
@@ -80,161 +117,77 @@ namespace ConsoleGUI
             }
             return (Console.CursorLeft - 1, Console.CursorTop);
         }
-        public void AreaFrame(bool CrossTrue)
+        public void Grid(int rows, int columns, ConsoleColor color = ConsoleColor.DarkGray)        
         {
+            int xOrigo = Constants.XStart - 1;
+            int yOrigo = Constants.YStart - 1;
+            (int X, int Y) frameOrigo = (xOrigo, yOrigo);         
+                   
+            int xLength = (Constants.XEnd + 1 - xOrigo);
+            int yLength = (Constants.YEnd + 1 - yOrigo);
 
-            int Width = EndPoint.X + 1;
-            int Height = EndPoint.Y + 1;
-            int middleY = Height / 2;
-            int middleX = Width / 2;
+            int xSpacingForColumns = xLength / columns;
+            int ySpacingForRows = yLength / rows;
 
-            for (int i = 1; i <= Width; i++)
-            {
-                CharAt(i, 0, '─');
-                CharAt(i, (Height), '─');
-            }
+            xLength = xSpacingForColumns * columns;
+            yLength = ySpacingForRows * rows;
 
+            (int X, int Y) frameEndpoint = (xLength+xOrigo, yLength+yOrigo);
 
-            for (int i = 1; i <= (Height); i++)
-            {
-                CharAt(0, i, '│');
-                CharAt((Width), i, '│');
-            }
-
-            CharAt(0, 0, '┌');
-            CharAt((Width), 0, '┐');
-            CharAt(0, (Height), '└');
-            CharAt((Width), (Height), '┘');
-
-            Console.CursorVisible = true;
-        }
-        public static void Grid(int rows, int columns)        
-        {
-            (int X, int Y) startPoint = (0, 0);
-            (int X, int Y) endPoint = (Constants.XEnd+1, Constants.YEnd+1);
-
-            var rowPoints = new List<(int X, int Y)>();
-            var columnPoints = new List<(int X, int Y)>();
-            var pointsDebug = new List<(int X, int Y)>();
-            decimal quota;
-            int removeValue;
-
+            var allRowPoints = new List<(int X, int Y)>();
+            var rowLines = new List<List<(int X, int Y)>>();
 
             for (int i = 0; i <= rows; i++)
             {
-                decimal rowQuota = i / (decimal)rows;
-                int yValue;
-                for (int j = startPoint.X; j <= endPoint.X; j++)
+                var rowLine = new List<(int X, int Y)>();
+                for (int x = frameOrigo.X; x <= frameEndpoint.X; x++)
                 {
-                    yValue = (int)Math.Round((endPoint.Y * rowQuota));
-                    rowPoints.Add((j, yValue));
+                    var rowPoint = (x, ySpacingForRows * i + yOrigo);
+                    rowLine.Add(rowPoint);
+                    allRowPoints.Add(rowPoint);
                 }
-                pointsDebug.Clear();
+                rowLines.Add(rowLine);
             }
-            
+
+            var allColumnPoints = new List<(int X, int Y)>();
+            var columnLines = new List<List<(int X, int Y)>>();
             for (int i = 0; i <= columns; i++)
             {
-                decimal columnQuota;
-                int xValue;
-                columnQuota = i / (decimal)columns;
-
-                for (int j = startPoint.Y; j <= endPoint.Y; j++)
+                var columnLine = new List<(int X, int Y)>();
+                for (int y = frameOrigo.Y; y <= frameEndpoint.Y; y++)
                 {
-                    xValue = (int)Math.Round((endPoint.X * columnQuota));
-                    columnPoints.Add((xValue, j));
+                    var rowPoint = (xSpacingForColumns * i + xOrigo, y);
+                    columnLine.Add(rowPoint);
+                    allColumnPoints.Add(rowPoint);
                 }
-
-
-                pointsDebug.Clear();
+                columnLines.Add(columnLine);
             }
-            var intersectingPoints = rowPoints.Intersect(columnPoints).ToList();
-            CharAt(rowPoints, '─');
-            CharAt(columnPoints, '│');
-            CharAt(intersectingPoints, '\u0004');
 
-            CharAt(startPoint, '┌');
-            CharAt((endPoint.X, startPoint.Y), '┐');
-            CharAt((startPoint.X, endPoint.Y), '└');
-            CharAt(endPoint, '┘');
+
+            var intersectingPoints = allRowPoints.Intersect(allColumnPoints).ToList();
+
+            for (int i = 1; i < rowLines.Count-1; i++) //middle rows
+            {
+                for (int j = 0; j < rowLines[i].Count; j+=8)
+                {
+                    newCharPoint(rowLines[i][j], '─', color);                    
+                }
+            }
+            for (int i = 1; i < columnLines.Count - 1; i++) //middle columns
+            {
+                for (int j = 0; j < columnLines[i].Count; j+=4)
+                {
+                    newCharPoint(columnLines[i][j], '│', color);
+                }
+            }
+
+            newCharPoint(intersectingPoints, '\u0004');//diamonds
+            newCharPoint(frameOrigo, '┌', color);
+            newCharPoint((frameEndpoint.X, frameOrigo.Y), '┐', color);
+            newCharPoint((frameOrigo.X, frameEndpoint.Y), '└', color);
+            newCharPoint(frameEndpoint, '┘', color);
         }
-        public void AreaFrame()
-        {
-            var points = new List<(int X, int Y)>();
-            int Width = EndPoint.X + 1;
-            int Height = EndPoint.Y + 1;
-            int lengthX = Width-1;
-            int lengthY = Height;
-            int middleX = Width / 2;
-            int middleY = Height / 2;
-
-            for (int i = 1; i < lengthX; i++)
-            {
-                points.Add((i, middleY));
-            }
-            points.RemoveAll(p => p.X == middleX && p.Y == middleY);
-            CharAt(points, '─');
-            points.Clear();
-
-            for (int i = 1; i < lengthX; i++)
-            {
-                points.Add((i, middleY/2));
-            }
-            points.RemoveAll(p => p.X == middleX && p.Y == middleY);
-            CharAt(points, '─');
-            points.Clear();
-
-            for (int i = 1; i < lengthX; i++)
-            {
-                points.Add((i, middleY * 3 / 2));
-            }
-            points.RemoveAll(p => p.X == middleX && p.Y == middleY);
-            CharAt(points, '─');
-            points.Clear();
-
-            for (int i = 1; i < lengthY; i++)
-            {
-                points.Add((middleX, i));
-            }
-            points.RemoveAll(p => p.X == middleX && p.Y == middleY);
-            CharAt(points, '│');
-            points.Clear();
-
-            for (int i = 1; i < lengthY; i++)
-            {
-                points.Add((middleX/2, i));
-            }
-            points.RemoveAll(p => p.X == middleX && p.Y == middleY);
-            CharAt(points, '│');
-            points.Clear();
-
-            for (int i = 1; i < lengthY; i++)
-            {
-                points.Add((middleX * 3 / 2, i));
-            }
-            points.RemoveAll(p => p.X == middleX && p.Y == middleY);
-            CharAt(points, '│');
-            points.Clear();
-
-
-
-            for (int i = 1; i <= Width; i++)
-            {
-                CharAt(i, 0, '─');
-                CharAt(i, (Height), '─');
-            }
-            for (int i = 1; i <= (Height); i++)
-            {
-                CharAt(0, i, '│');
-                CharAt((Width), i, '│');
-            }
-
-            CharAt(0, 0, '┌');
-            CharAt((Width), 0, '┐');
-            CharAt(0, (Height), '└');
-            CharAt((Width), (Height), '┘');
-
-            Console.CursorVisible = true;
-        }
+    
         public void KeyOptions()
         {
             var coloroptions = new List<string>
@@ -296,10 +249,10 @@ namespace ConsoleGUI
 
             Console.CursorVisible = true;
         }
-
+        
         public static bool IsInsideDrawboard((int X, int Y) point)
         {
-            return (point.X >= 1 && point.Y >= 1 && point.X <= Constants.XEnd && point.Y <= Constants.YEnd) ? true : false;
+            return (point.X >= Constants.XStart && point.Y >= Constants.YStart && point.X <= Constants.XEnd && point.Y <= Constants.YEnd) ? true : false;
         }
 
         public static void DrawAt(int X, int Y, ConsoleColor color = ConsoleColor.White)
@@ -335,36 +288,40 @@ namespace ConsoleGUI
             ResetCursor(cursorPos);
             Console.CursorVisible = true;
         }
-        public static void DrawAt(List<(int X, int Y)> points, ConsoleColor color = ConsoleColor.White)
+        public void DrawAt(List<(int X, int Y)> points, ConsoleColor color = ConsoleColor.White)
         {
             Console.CursorVisible = false;
             var cursorPos = SaveCursor();
             var colorSave = SaveColors();
+
+            var charPointValues = new List<(int X, int Y)>();
+
+            if (CharPoints.Count>0)
+            {
+                foreach (var cp in CharPoints)
+                {
+                    charPointValues.Add(cp.Point);
+                }
+            }
 
             foreach ((int X, int Y) point in points)
             {
-                if (IsInsideDrawboard(point))
+                if (charPointValues.Contains(point))
                 {
-                    Console.SetCursorPosition(point.X, point.Y);
-                    Console.BackgroundColor = color;
-                    Console.Write(" ");
-                    
-                }               
+                    int index = charPointValues.FindIndex(x => x == point);
+                    CharPoints[index].Draw(color);
+                }
+                else
+                {
+                    if (IsInsideDrawboard((point)))
+                    {
+                        Console.SetCursorPosition(point.X, point.Y);
+                        Console.BackgroundColor = color;
+                        Console.Write(" ");                    
+                    }            
+
+                }
             }
-            ResetColors(colorSave);
-            ResetCursor(cursorPos);
-            Console.CursorVisible = true;
-        }
-        public static void Erase(List<(int X, int Y)> newPoints, List<(int X, int Y)> oldPoints, ConsoleColor color = ConsoleColor.Black)
-        {
-            var cursorPos = SaveCursor();
-            var colorSave = SaveColors();
-            Console.CursorVisible = false;
-
-            var erasePoints = oldPoints.Except(newPoints).ToList();
-
-            DrawAt(erasePoints, Console.BackgroundColor);
-
             ResetColors(colorSave);
             ResetCursor(cursorPos);
             Console.CursorVisible = true;
@@ -379,7 +336,7 @@ namespace ConsoleGUI
             Console.BackgroundColor = oldColors.background;
         }
         
-        public static void CharAt(int left, int top, char c = ' ', ConsoleColor foregroundColor = ConsoleColor.White)
+        public static void CharAt(int left, int top, char c = ' ', ConsoleColor foregroundColor = ConsoleColor.White, ConsoleColor backgroundColor = ConsoleColor.Black)
 
 
         {
@@ -395,7 +352,7 @@ namespace ConsoleGUI
             ResetCursor(cursorPos);
 
         }
-        public static void CharAt((int X, int Y) point, char c = ' ', ConsoleColor foregroundColor = ConsoleColor.White)
+        public static void CharAt((int X, int Y) point, char c = ' ', ConsoleColor foregroundColor = ConsoleColor.White, ConsoleColor backgroundColor = ConsoleColor.Black)
 
 
         {

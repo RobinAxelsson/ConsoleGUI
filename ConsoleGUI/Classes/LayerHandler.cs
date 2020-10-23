@@ -11,13 +11,15 @@ namespace ConsoleGUI
         public ConsoleColor BackgroundColor = ConsoleColor.Black;
         //public List<(int X, int Y)> DrawnBackground;
         public LayerObject ActiveObject { get; set; }
+        public DrawBoard DrawBoard;
         public LayerHandler()
         {
             var layerObjects = new List<LayerObject>();
             LayerObjects = layerObjects;
             var Background = new LayerObject(ConsoleColor.Black);
             LayerObjects.Add(Background);
-            ActiveObject = Background;
+            //ActiveObject = Background;
+
         }
 
         public LayerObject CreateLayerObject(LayerObject.ShapeType shape, (int X, int Y) point1, (int X, int Y) point2, ConsoleColor color = ConsoleColor.White, bool isFillTrue = false)
@@ -157,11 +159,10 @@ namespace ConsoleGUI
                 }
                 next++;
             }
-            for (int i = 0; i < drawPointsNew.Count; i++)
+            for (int i = drawPointsNew.Count-1; i >= 0; i--)
             {
                 DrawBoard.DrawAt(drawPointsNew[i], LayerObjects[i].Color);
             }
-
 
         }
 

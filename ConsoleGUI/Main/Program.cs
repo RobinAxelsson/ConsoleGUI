@@ -18,23 +18,31 @@ namespace ConsoleGUI
     using static ConsoleKey;
     public class Program
     {      
-
+        
         public static void Main()
         {
+
             Console.SetWindowSize(Console.LargestWindowWidth, Console.LargestWindowHeight);
             ShowWindow(ThisConsole, MAXIMIZE);
-            Console.BufferHeight = Console.WindowHeight + 3;
+            Console.BufferWidth = Console.WindowWidth;
+            //Largest windowwidth = 200
+            //Largest windowheight = 71
+
             CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
             Console.CursorVisible = false;
 
-            DrawBoard.Grid(15, 10);
-            Console.ReadKey();
-            /*
-            var drawBoard = new DrawBoard();
+
+
             var handler = new LayerHandler();
+            var drawBoard = new DrawBoard();
+            handler.DrawBoard = drawBoard;
+            drawBoard.Grid(4,4);
+            drawBoard.KeyOptions();
+
             (int X, int Y) point1;
             (int X, int Y) point2;
+
             var prompt = new TextBody((40, 25), "Create your first object. Circle [c], Rectangle [e], Line [l]");
 
             ConsoleKey key = Console.ReadKey(true).Key;
@@ -50,7 +58,7 @@ namespace ConsoleGUI
 
             Console.SetCursorPosition(75, 25);
 
-            
+
             var blueRectangle = handler.CreateLayerObject(Rectangle, (25, 30), (125, 50), DarkBlue, true);
             var circle = handler.CreateLayerObject(Circle, (75, 15), (30, 15), Yellow, true);
             var eye = handler.CreateLayerObject(Circle, (50, 15), (30, 15), White, true);
@@ -157,11 +165,11 @@ namespace ConsoleGUI
                 handler.ActiveObject.Fill();
                 key = Console.ReadKey(true).Key;
             }
-            Console.ReadKey();*/
-        }     
+            Console.ReadKey();
+        }
 
 
-       
+
         [DllImport("kernel32.dll", ExactSpelling = true)]
         private static extern IntPtr GetConsoleWindow();
         private static IntPtr ThisConsole = GetConsoleWindow();

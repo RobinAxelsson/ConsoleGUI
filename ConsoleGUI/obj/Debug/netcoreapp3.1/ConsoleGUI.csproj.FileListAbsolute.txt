@@ -85,7 +85,6 @@ C:\Users\Anv\source\repos\AbstractionLessson16\ConsoleGUI\bin\Debug\netcoreapp3.
 C:\Users\Anv\source\repos\AbstractionLessson16\ConsoleGUI\bin\Debug\netcoreapp3.1\zh-Hant\Microsoft.TestPlatform.CommunicationUtilities.resources.dll
 C:\Users\Anv\source\repos\AbstractionLessson16\ConsoleGUI\bin\Debug\netcoreapp3.1\zh-Hant\Microsoft.TestPlatform.CrossPlatEngine.resources.dll
 C:\Users\Anv\source\repos\AbstractionLessson16\ConsoleGUI\bin\Debug\netcoreapp3.1\zh-Hant\Microsoft.VisualStudio.TestPlatform.Common.resources.dll
-C:\Users\Anv\source\repos\AbstractionLessson16\ConsoleGUI\obj\Debug\netcoreapp3.1\ConsoleGUI.csprojAssemblyReference.cache
 C:\Users\Anv\source\repos\AbstractionLessson16\ConsoleGUI\obj\Debug\netcoreapp3.1\ConsoleGUI.AssemblyInfoInputs.cache
 C:\Users\Anv\source\repos\AbstractionLessson16\ConsoleGUI\obj\Debug\netcoreapp3.1\ConsoleGUI.AssemblyInfo.cs
 C:\Users\Anv\source\repos\AbstractionLessson16\ConsoleGUI\obj\Debug\netcoreapp3.1\ConsoleGUI.csproj.CoreCompileInputs.cache

@@ -5,6 +5,12 @@ using System.Text;
 
 namespace ConsoleGUI
 {
+    public class Background : LayerObject
+    {
+        public new (int X, int Y) Point1 = (Constants.XStart, Constants.YStart);
+        public new(int X, int Y) Point2 = (Constants.XEnd, Constants.YEnd);
+
+    }
     public class LayerObject
     {
         public enum ShapeType
@@ -30,7 +36,7 @@ namespace ConsoleGUI
         Point1 = point1;
         Point2 = point2;
         Color = color;
-            FillTrue = true;
+        FillTrue = true;
         }
 
         public LayerObject((int X, int Y) point1, (int X, int Y) point2, ShapeType shape, ConsoleColor color = ConsoleColor.White, bool isFillTrue = false)
