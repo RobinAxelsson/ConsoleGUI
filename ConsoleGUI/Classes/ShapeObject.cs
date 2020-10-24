@@ -7,6 +7,13 @@ namespace ConsoleGUI
 {
     public class Circle : ShapeObject
     {
+        //public Circle() : base((int X, int Y) point1, (int X, int Y) point2, ConsoleColor color, bool fill = false)
+        //{
+        //    Point1 = point1;
+        //    Point2 = point2;
+        //    Color = color;
+        //    Fill = false;
+        //}
         public List<(int X, int Y)> GeometricalPoints()
         {
             double radius = RadiusFrom2Point(Point1, Point2, 10);
@@ -151,45 +158,7 @@ namespace ConsoleGUI
     }
     public class Line : ShapeObject
     {
-        public List<(int X, int Y)> GeometricalPoints()
-        {
-            var Xs = Point.LineValsX(Point1, Point2);
-            var Ys = Point.LineValsY(Point1, Point2);
-
-            var points = new List<(int X, int Y)>();
-
-            if (Xs.Count >= Ys.Count)
-            {
-                double yStep = Ys.Count / (double)Xs.Count;
-                double yIndex = 0;
-                int yRastorIndex = 0;
-
-
-                foreach (int X in Xs)
-                {
-                    yRastorIndex = (int)yIndex;
-                    points.Add((X, Ys[yRastorIndex]));
-                    yIndex += yStep;
-                }
-            }
-            else //More Ys then Xs
-            {
-                double xStep = Xs.Count / (double)Ys.Count;
-                double xIndex = 0;
-                int xRastorIndex = 0;
-
-
-                foreach (int Y in Ys)
-                {
-                    xRastorIndex = (int)xIndex;
-                    points.Add((Xs[xRastorIndex], Y));
-                    xIndex += xStep;
-                }
-            }
-            return points;
-
-        }
-
+       
     }
     public class ShapeObject
     {
@@ -197,7 +166,13 @@ namespace ConsoleGUI
         public (int X, int Y) Point2;
         public ConsoleColor Color;
         public bool Fill;
-        public ShapeObject()
-        { }
+        public ShapeObject((int X, int Y) point1, (int X, int Y) point2, ConsoleColor color, bool fill = false)
+        {
+            Point1 = point1;
+            Point2 = point2;
+            Color = color;
+            Fill = false;
+        
+        }
     }
 }

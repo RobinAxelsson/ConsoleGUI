@@ -18,8 +18,7 @@ namespace ConsoleGUI
     using static ConsoleColor;
     using static ConsoleKey;
     public class Program
-    {      
-        
+    {
         public static void Main()
         {
 
@@ -33,14 +32,8 @@ namespace ConsoleGUI
 
             Console.CursorVisible = false;
             var sheet = new DrawSheet();
-            sheet.DisplayAdd((5, 5), 'o');
-            Console.ReadKey();
-            var obj = new Circle();
-            obj.Color = DarkGreen;
-            sheet.ShapeObjects.Add(obj);
-            sheet.Activate(obj);
-            sheet.DisplayAdd((5, 5), 'o');
-
+            sheet.Grid(4,4);
+            var circle = new Circle();
             Console.ReadKey();
         }
 
