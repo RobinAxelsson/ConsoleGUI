@@ -17,7 +17,6 @@ namespace ConsoleGUI
     //using static LayerObject.ShapeType;
     using static ConsoleColor;
     using static ConsoleKey;
-    using static DrawSheet.Direction;
     public class Program
     {
         public static void Main()
@@ -34,15 +33,21 @@ namespace ConsoleGUI
             Console.CursorVisible = false;
             var sheet = new DrawSheet();
             sheet.Grid(4,4);
-            var circle = new Circle((9, 15), (14, 15), Red);
+
+            var circle = new Circle((30, 15), (45, 15), Red);
+            sheet.AddNew(circle);
+
+            var circle2 = new Circle((30, 15), (45, 15), Blue);
             sheet.AddNew(circle);
 
             ConsoleKey key = Spacebar;
+            Console.BackgroundColor = Black;
 
-            while (true)
+            while (key != Enter)
             {
-            sheet.Move(circle, Down);
-            key = Console.ReadKey(true);
+                sheet.Move(circle, key);
+                sheet.ToggleActiveObject(key);
+                key = Console.ReadKey(true).Key;
             }
 
         }
