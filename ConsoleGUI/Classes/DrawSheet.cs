@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace ConsoleGUI.Classes
 {
-    public static class Fixed
+    public static class Constants
     {
         //Largest windowwidth = 200
         //Largest windowheight = 71
@@ -15,27 +15,28 @@ namespace ConsoleGUI.Classes
         public const int YEnd = 60;
         public const ConsoleColor BackgroundColor = ConsoleColor.Black;
     }
-  
     public class Pixel
     {
         public (int X, int Y) Coord;
-        public List<ShapeObject> PresentObjects;
-        public char Character = ' ';
+        public List<IShape> PresentObjects;
+        public List<char> PresentChars;
         public ConsoleColor ForegroundColor;
-        public Pixel((int X, int Y) coord,  ShapeObject shapeObject, char character = ' ', ConsoleColor foregroundColor = ConsoleColor.White)
+        public Pixel((int X, int Y) coord, IShape shapeObject, ConsoleColor foregroundColor = ConsoleColor.White)
         {
-            var currentObjects = new List<ShapeObject>();
+            var presentObjects = new List<IShape>();
+            var presentChars = new List<char> { ' ' };
             Coord = coord;
-            Character = character;
-            PresentObjects = currentObjects;
+            PresentChars = presentChars;
+            PresentObjects = presentObjects;
             PresentObjects.Add(shapeObject);
             ForegroundColor = foregroundColor;
         }
         public Pixel((int X, int Y) coord, char character, ConsoleColor foregroundColor = ConsoleColor.White)
         {
-            var presentObjects = new List<ShapeObject>();
+            var presentObjects = new List<IShape>();
+            var presentChars = new List<char> { ' ', character };
             Coord = coord;
-            Character = character;
+            PresentChars = presentChars;
             PresentObjects = presentObjects;
             ForegroundColor = foregroundColor;
         }
@@ -46,36 +47,55 @@ namespace ConsoleGUI.Classes
             {
                 Console.BackgroundColor = PresentObjects[^1].Color;
             }
-            if (Character != ' ')
+            if (PresentChars[^1] != ' ')
             {
                 Console.ForegroundColor = ForegroundColor;
             }
-            Console.Write(Character);
+            Console.Write(PresentChars[^1]);
         }
     }
     public class DrawSheet
     {
+        public enum Direction
+        {
+            Up,
+            Down,
+            Left,
+            Right
+        }
         public List<Pixel> Pixels;
-        public List<ShapeObject> SheetObjects;
-        private ShapeObject ActiveObject { get; set; }
+        public List<IShape> SheetObjects;
+        private IShape ActiveObject { get; set; }
 
         public DrawSheet()
         { 
             var pixels = new List<Pixel>();
-            var shapeObjects = new List<ShapeObject>();
-            var activeObject = new ShapeObject();
+            var shapeObjects = new List<IShape>();
 
             Pixels = pixels;
             SheetObjects = shapeObjects;
-            ActiveObject = activeObject;
         }
 
-        public void Activate(ShapeObject shapeObject)
+        public void Activate(IShape shapeObject)
         {
             ActiveObject = shapeObject;
             SheetObjects.Add(shapeObject);
             Console.BackgroundColor = shapeObject.Color;
             Console.CursorVisible = false;
+
+        }
+        public void AddNew(IShape shapeObject)
+        {
+            ActiveObject = shapeObject;
+            SheetObjects.Add(shapeObject);
+            Console.BackgroundColor = shapeObject.Color;
+            Console.CursorVisible = false;
+
+            foreach (var coord in shapeObject.Coordinates)
+            {
+                DisplayAdd(coord);
+            }
+
         }
         public void StringPixels((int X, int Y) coord, string prompt, ConsoleColor color, bool center)
         {
@@ -111,7 +131,7 @@ namespace ConsoleGUI.Classes
 
             if (!pixelExists)
             {
-                var pixel = new Pixel(coord, ActiveObject, character);
+                var pixel = new Pixel(coord, ActiveObject);
                 Console.SetCursorPosition(coord.X, coord.Y);
                 Console.Write(character);
                 Pixels.Add(pixel);
@@ -184,11 +204,49 @@ namespace ConsoleGUI.Classes
                 }
             }        
         }
-        public void DisplayRemove((int X, int Y) coord, char character = ' ')
+        public void DisplayRemove((int X, int Y) coord)
         {
             var pixel = Pixels.Find(p => p.Coord == coord);
-            pixel.PresentObjects.Remove(ActiveObject);
-            pixel.Refresh();
+
+            bool onlyOneUse = pixel.PresentChars.Count == 1 && pixel.PresentObjects.Count == 1; 
+
+            if (onlyOneUse)
+            {
+                Pixels.Remove(pixel);
+                return;
+            }
+            else
+            {
+                pixel.PresentObjects.Remove(ActiveObject);
+                pixel.Refresh();
+            }
+        }
+        public void Move(IShape shape, Direction direction)
+        {
+            var oldCoordinates = shape.Coordinates;
+            var newCoordinates = new List<(int X, int Y)>();
+            var keptCoordinates = new List<(int X, int Y)>();
+            var removeCoordinates = new List<(int X, int Y)>();
+            var drawCoordinates = new List<(int X, int Y)>();
+
+            if (direction == Direction.Down)
+            {
+                foreach (var c in oldCoordinates)
+                {
+                    newCoordinates.Add((c.X, c.Y + 1));
+                }
+                keptCoordinates = oldCoordinates.Intersect(newCoordinates).ToList();
+                drawCoordinates = newCoordinates.Except(keptCoordinates).ToList();
+                removeCoordinates = oldCoordinates.Except(keptCoordinates).ToList();
+            }
+            foreach (var p in drawCoordinates)
+            {
+                DisplayAdd(p);
+            }
+            foreach (var p in removeCoordinates)
+            {
+                DisplayRemove(p);
+            }
         }
 
         public void Grid(int rows, int columns, ConsoleColor color = ConsoleColor.DarkGray)
@@ -260,6 +318,92 @@ namespace ConsoleGUI.Classes
             CharPixel((frameEndpoint.X, frameOrigo.Y), '┐', color);
             CharPixel((frameOrigo.X, frameEndpoint.Y), '└', color);
             CharPixel(frameEndpoint, '┘', color);
+        }
+        public static (int X, int Y) PointFromCursor(out ConsoleKey key, bool dynamic = false)
+        {
+            key = ConsoleKey.Spacebar;
+
+            if (!dynamic)
+            {
+                while (key != ConsoleKey.Enter)
+                {
+                    key = Console.ReadKey(true).Key;
+                    if (key == ConsoleKey.LeftArrow && Console.CursorLeft >= 1) Console.CursorLeft--;
+                    if (key == ConsoleKey.RightArrow && Console.CursorLeft <= Constants.XEnd) Console.CursorLeft++;
+                    if (key == ConsoleKey.UpArrow && Console.CursorTop >= 1) Console.CursorTop--;
+                    if (key == ConsoleKey.DownArrow && Console.CursorTop <= Constants.YEnd) Console.CursorTop++;
+                }
+
+            }
+            else
+            {
+                key = Console.ReadKey(true).Key;
+                if (key == ConsoleKey.LeftArrow && Console.CursorLeft >= 1) Console.CursorLeft--;
+                if (key == ConsoleKey.RightArrow && Console.CursorLeft <= Constants.XEnd) Console.CursorLeft++;
+                if (key == ConsoleKey.UpArrow && Console.CursorTop >= 1) Console.CursorTop--;
+                if (key == ConsoleKey.DownArrow && Console.CursorTop <= Constants.YEnd) Console.CursorTop++;
+            }
+            return (Console.CursorLeft - 1, Console.CursorTop);
+        }
+        public static (int X, int Y) PointFromCursor(bool dynamic = false)
+        {
+            ConsoleKey? key = null;
+
+            if (!dynamic)
+            {
+                while (key != ConsoleKey.Enter)
+                {
+                    key = Console.ReadKey(true).Key;
+                    if (key == ConsoleKey.LeftArrow && Console.CursorLeft >= 1) Console.CursorLeft--;
+                    if (key == ConsoleKey.RightArrow && Console.CursorLeft <= Constants.XEnd) Console.CursorLeft++;
+                    if (key == ConsoleKey.UpArrow && Console.CursorTop >= 1) Console.CursorTop--;
+                    if (key == ConsoleKey.DownArrow && Console.CursorTop <= Constants.YEnd) Console.CursorTop++;
+                }
+
+            }
+            else
+            {
+                key = Console.ReadKey(true).Key;
+                if (key == ConsoleKey.LeftArrow && Console.CursorLeft >= 1) Console.CursorLeft--;
+                if (key == ConsoleKey.RightArrow && Console.CursorLeft <= Constants.XEnd) Console.CursorLeft++;
+                if (key == ConsoleKey.UpArrow && Console.CursorTop >= 1) Console.CursorTop--;
+                if (key == ConsoleKey.DownArrow && Console.CursorTop <= Constants.YEnd) Console.CursorTop++;
+            }
+            return (Console.CursorLeft - 1, Console.CursorTop);
+        }
+        public void KeyOptions()
+        {
+            var coloroptions = new List<string>
+            {
+                "Press Hotkeys[hotkey]",
+                "-for all commands-",
+                "Confirm command [Enter]",
+                "",
+                "Change Color:",
+                "Default Black[d]",
+                "White [w]",
+                "Blue [b]",
+                "Red [r]",
+                "Yellow [y]",
+                "Green [g]",
+                "",
+                "New Object:",
+                "Circle [c]",
+                "Rectangle [e]",
+                "Line [l]",
+                "",
+                "Change Current Object",
+                "",
+                "Move [m]",
+                "Fill/Unfill [f]",
+                "Rescale [s]",
+                "Move object up stack [+]",
+                "Move object back [-]",
+                "Name [n]",
+                "",
+                "Change Object[Tab]",
+                "",
+            };
         }
     }
 }

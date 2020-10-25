@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleGUI", "ConsoleGUI\Co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Snake", "..\ConsoleSnakeCSharp\Snake\Snake.csproj", "{DF5A27E9-FF9A-446D-8D5B-C4FF22F9449B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestProjectClasses", "TestProjectClasses\TestProjectClasses.csproj", "{C6E3EF43-02DD-43FC-A7D1-7AEB10846988}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{DF5A27E9-FF9A-446D-8D5B-C4FF22F9449B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DF5A27E9-FF9A-446D-8D5B-C4FF22F9449B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DF5A27E9-FF9A-446D-8D5B-C4FF22F9449B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6E3EF43-02DD-43FC-A7D1-7AEB10846988}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6E3EF43-02DD-43FC-A7D1-7AEB10846988}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6E3EF43-02DD-43FC-A7D1-7AEB10846988}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6E3EF43-02DD-43FC-A7D1-7AEB10846988}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

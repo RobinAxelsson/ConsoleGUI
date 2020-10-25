@@ -5,23 +5,106 @@ using System.Text;
 
 namespace ConsoleGUI
 {
-    public class Circle : ShapeObject
+    public abstract class IShape
     {
-        //public Circle() : base((int X, int Y) point1, (int X, int Y) point2, ConsoleColor color, bool fill = false)
-        //{
-        //    Point1 = point1;
-        //    Point2 = point2;
-        //    Color = color;
-        //    Fill = false;
-        //}
-        public List<(int X, int Y)> GeometricalPoints()
+        public (int X, int Y) Point1;
+        public (int X, int Y) Point2;
+        public List<(int X, int Y)> Coordinates;
+        public ConsoleColor Color;
+        public bool IsFilled;
+        public abstract void Geometry();
+    }
+    public class Circle : IShape
+    {
+        public Circle((int X, int Y) point1, (int X, int Y) point2, ConsoleColor color, bool fill = false)
         {
-            double radius = RadiusFrom2Point(Point1, Point2, 10);
-            var points = CircleEdgePoints(radius);
-            points = SetCenterpoint(Point1, points);
-
-            return points;
+            Point1 = point1;
+            Point2 = point2;
+            Color = color;
+            IsFilled = false;
+            Geometry();
         }
+        public override void Geometry()
+        {
+            double radius = ConsoleGUI.Coordinates.RadiusFrom2Point(Point1, Point2, 10);
+            var points = ConsoleGUI.Coordinates.CircleEdgePoints(radius);
+            points = ConsoleGUI.Coordinates.SetCenterpoint(Point1, points);
+
+            Coordinates = points;
+        }
+    }
+    public class Rectangle : IShape
+    {
+        public Rectangle((int X, int Y) point1, (int X, int Y) point2, ConsoleColor color, bool fill = false)
+        {
+            Point1 = point1;
+            Point2 = point2;
+            Color = color;
+            IsFilled = fill;
+        }
+        public override void Geometry()
+        {
+            var points = new List<(int X, int Y)>();
+
+            var Xs = new List<int>();
+            int x = Point1.X;
+            int xEnd = Point2.X;
+
+            if (Point1.X < Point2.X)
+            {
+                while (x <= xEnd)
+                {
+                    Xs.Add(x);
+                    x++;
+                }
+            }
+            else
+            {
+                while (x >= xEnd)
+                {
+                    Xs.Add(x);
+                    x--;
+                }
+            }
+
+            var Ys = new List<int>();
+            int y = Point1.Y;
+            int yEnd = Point2.Y;
+
+            if (Point1.Y < Point2.Y)
+            {
+                while (y <= yEnd)
+                {
+                    Ys.Add(y);
+                    y++;
+                }
+            }
+            else
+            {
+                while (y >= yEnd)
+                {
+                    Ys.Add(y);
+                    y--;
+                }
+            }
+            foreach (var X in Xs)
+            {
+                points.Add((X, Point1.Y));
+                points.Add((X, Point2.Y));
+            }
+            foreach (var Y in Ys)
+            {
+                points.Add((Point1.X, Y));
+                points.Add((Point2.X, Y));
+            }
+            points = points.Distinct().ToList();
+
+            Coordinates = points;
+
+        }
+    }
+    public static class Coordinates
+    {
         public static bool CircleEdgeXYsDouble(out List<double> doubleXs, out List<double> doubleYs, double radius, double xIncr = 0.001, double scewRatio = 0.5)
         {
             double sqrt;
@@ -93,86 +176,6 @@ namespace ConsoleGUI
 
             return radius;
         }
-    }
-    public class Rectangle : ShapeObject
-    { 
-        public List<(int X, int Y)> GeometricalPoints()
-        {
-            var points = new List<(int X, int Y)>();
 
-            var Xs = new List<int>();
-            int x = Point1.X;
-            int xEnd = Point2.X;
-
-            if (Point1.X < Point2.X)
-            {
-                while (x <= xEnd)
-                {
-                    Xs.Add(x);
-                    x++;
-                }
-            }
-            else
-            {
-                while (x >= xEnd)
-                {
-                    Xs.Add(x);
-                    x--;
-                }
-            }
-
-            var Ys = new List<int>();
-            int y = Point1.Y;
-            int yEnd = Point2.Y;
-
-            if (Point1.Y < Point2.Y)
-            {
-                while (y <= yEnd)
-                {
-                    Ys.Add(y);
-                    y++;
-                }
-            }
-            else
-            {
-                while (y >= yEnd)
-                {
-                    Ys.Add(y);
-                    y--;
-                }
-            }
-            foreach (var X in Xs)
-            {
-                points.Add((X, Point1.Y));
-                points.Add((X, Point2.Y));
-            }
-            foreach (var Y in Ys)
-            {
-                points.Add((Point1.X, Y));
-                points.Add((Point2.X, Y));
-            }
-            points = points.Distinct().ToList();
-            return points;
-        }   
-
-    }
-    public class Line : ShapeObject
-    {
-       
-    }
-    public class ShapeObject
-    {
-        public (int X, int Y) Point1;
-        public (int X, int Y) Point2;
-        public ConsoleColor Color;
-        public bool Fill;
-        public ShapeObject((int X, int Y) point1, (int X, int Y) point2, ConsoleColor color, bool fill = false)
-        {
-            Point1 = point1;
-            Point2 = point2;
-            Color = color;
-            Fill = false;
-        
-        }
     }
 }

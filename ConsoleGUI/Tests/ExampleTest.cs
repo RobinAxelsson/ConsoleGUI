@@ -7,28 +7,27 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ConsoleGUI
 {
+    class Shape
+    {
+        public int X;
+        int Y;
+    }
+    class Triangle : Shape
+    {
+
+    }
+
     [TestClass]
 
     public class ExampleTest
     {
-        [TestInitialize]
-        public void TestInit()
-        {
-            CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
-        }
 
         [TestMethod]
-        public void DivideByZero()
+        public void TestingClasses()
         {
-            try
-            {
-                int zero = 0;
-                int result = 5 / zero;
-            }
-            catch (Exception ex)
-            {
-                Assert.AreEqual(ex.Message, "Attempted to divide by zero.");
-            }
+            var shape = new Shape();
+
+
         }
     }
 }
