@@ -37,15 +37,15 @@ namespace ConsoleGUI
             var circle = new Circle((30, 15), (45, 15), Red);
             sheet.AddNew(circle);
 
-            var circle2 = new Circle((30, 15), (45, 15), Blue);
-            sheet.AddNew(circle);
+            var circle2 = new Circle((40, 15), (45, 15), Blue);
+            sheet.AddNew(circle2);
 
             ConsoleKey key = Spacebar;
             Console.BackgroundColor = Black;
 
             while (key != Enter)
             {
-                sheet.Move(circle, key);
+                sheet.Move(circle2, key);
                 sheet.ToggleActiveObject(key);
                 key = Console.ReadKey(true).Key;
             }

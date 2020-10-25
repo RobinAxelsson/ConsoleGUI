@@ -154,7 +154,7 @@ namespace ConsoleGUI.Classes
 
                         for (int i = 0; i < SheetObjects.Count; i++)
                         {
-                            if (SheetObjects[i] == pixel.PresentObjects[pixelIndex])
+                            if (SheetObjects[i] == pixel.PresentObjects[pixelIndex] && pixelIndex >= pixel.PresentObjects.Count)
                             {
                                 indexHits.Add(i);
                                 pixelIndex++;
@@ -222,6 +222,8 @@ namespace ConsoleGUI.Classes
         }
         public void Move(IShape shape, ConsoleKey key)
         {
+            ActiveObject = shape;
+
             var oldCoordinates = shape.Coordinates;
             var newCoordinates = new List<(int X, int Y)>();
             var keptCoordinates = new List<(int X, int Y)>();
@@ -244,13 +246,13 @@ namespace ConsoleGUI.Classes
             keptCoordinates = oldCoordinates.Intersect(newCoordinates).ToList();
             drawCoordinates = newCoordinates.Except(keptCoordinates).ToList();
             removeCoordinates = oldCoordinates.Except(keptCoordinates).ToList();
-            foreach (var p in removeCoordinates)
-            {
-                DisplayRemove(p);
-            }
             foreach (var p in drawCoordinates)
             {
                 DisplayAdd(p);
+            }
+            foreach (var p in removeCoordinates)
+            {
+                DisplayRemove(p);
             }
             
         }
