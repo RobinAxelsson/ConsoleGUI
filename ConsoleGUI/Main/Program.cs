@@ -21,17 +21,15 @@ namespace ConsoleGUI
     {
         public static void Main()
         {
-            Settings.SmallWindow();
-            //Settings.FullsizeWindow();
+            //Settings.SmallWindow();
+            Settings.FullsizeWindow();
 
             CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
             Console.CursorVisible = false;
             var sheet = new DrawSheet();
             sheet.Grid(4,4);
-
-     
-
+             
             var redDots = new FreeForm((10, 10), (11, 10), Red);
 
             sheet.AddNew(redDots);
@@ -40,9 +38,9 @@ namespace ConsoleGUI
 
             sheet.AddNew(blueDots);
 
-            var greenDots = new FreeForm((12, 10), (13, 10), Green);
+            //var greenDots = new FreeForm((12, 10), (13, 10), Green);
 
-            sheet.AddNew(greenDots);
+            //sheet.AddNew(greenDots);
 
             var circle = new Circle((12, 10), (15, 15), Yellow);
 
@@ -51,12 +49,13 @@ namespace ConsoleGUI
             ConsoleKey key = Spacebar;
 
             while (key != Enter)
+
             {
                 sheet.Move(key);
                 sheet.ShiftLayer(key);
                 sheet.ToggleActiveObject(key);
                 sheet.Scale(key);
-
+                sheet.addShape(key);
                 key = Console.ReadKey(true).Key;
             }
 

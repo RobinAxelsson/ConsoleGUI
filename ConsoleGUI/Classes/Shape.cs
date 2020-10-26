@@ -12,6 +12,7 @@ namespace ConsoleGUI
         public List<(int X, int Y)> Coordinates;
         public ConsoleColor Color;
         public bool IsFilled;
+        public int Count;
         public abstract void Geometry();
     }
     public class FreeForm : IShape

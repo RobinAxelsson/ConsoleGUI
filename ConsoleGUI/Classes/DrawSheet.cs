@@ -71,7 +71,26 @@ namespace ConsoleGUI.Classes
             Pixels = pixels;
             SheetObjects = shapeObjects;
         }
+        public void addShape(ConsoleKey key)
+        {
+            if (key != ConsoleKey.N)
+            {
+                return;
+            }
+            StringPixels((50, 50), "Pick new object [r][c][l][f]", ConsoleColor.White, true);
 
+
+                key = Console.ReadKey(true).Key;
+                if (key == ConsoleKey.C)
+                {
+                    int x = Console.CursorLeft;
+                    int y = Console.CursorTop;
+                    var circle = new Circle((x, y), (x+5, y), ConsoleColor.Yellow);
+                    AddNew(circle);
+                }
+
+
+        }
         public void Activate(IShape shapeObject)
         {
             ActiveObject = shapeObject;
@@ -283,25 +302,31 @@ namespace ConsoleGUI.Classes
 
         }
         public void Scale(ConsoleKey key)
-        { 
-        //    if (key != ConsoleKey.S)
-        //    {
-        //        return;
-        //    }
-            var shape = ActiveObject;
-            var oldCoordinates = shape.Coordinates;
-            var oldPoint2 = shape.Point2;
+        {
+            if (key != ConsoleKey.S)
+            {
+                return;
+            }
+
 
             var newCoordinates = new List<(int X, int Y)>();
             var keptCoordinates = new List<(int X, int Y)>();
             var removeCoordinates = new List<(int X, int Y)>();
             var drawCoordinates = new List<(int X, int Y)>();
-            int xi = 0;
-            int yi = 0;
+            var oldCoordinates = new List<(int X, int Y)>();
+            (int X, int Y) oldPoint2;
+            int xi;
+            int yi;
 
-            //do
-            //{
-                //key = Console.ReadKey(true).Key;
+            do
+            {
+                oldCoordinates.Clear();
+                newCoordinates.Clear();
+                key = Console.ReadKey(true).Key;
+                oldCoordinates.AddRange(ActiveObject.Coordinates);
+                oldPoint2 = (ActiveObject.Point2.X, ActiveObject.Point2.Y);
+                xi = 0;
+                yi = 0;
 
                 if (key == ConsoleKey.DownArrow) yi = +1;
                 if (key == ConsoleKey.RightArrow) xi = +1;
@@ -323,15 +348,15 @@ namespace ConsoleGUI.Classes
                     yi = -1;
                 }
 
-                shape.Point2 = (shape.Point2.X + xi, shape.Point2.Y + yi);
-                shape.Geometry();
+                ActiveObject.Point2 = (ActiveObject.Point2.X + xi, ActiveObject.Point2.Y + yi);
+                ActiveObject.Geometry();
 
-                newCoordinates = shape.Coordinates;
+                newCoordinates.AddRange(ActiveObject.Coordinates);
 
                 if (!newCoordinates.TrueForAll(c => c.X >= 5))
                 {
-                    shape.Coordinates = oldCoordinates;
-                    shape.Point2 = oldPoint2;
+                    ActiveObject.Point2 = oldPoint2;
+                    ActiveObject.Geometry();
                     return;
                 }
 
@@ -346,33 +371,34 @@ namespace ConsoleGUI.Classes
                 {
                     DisplayRemove(p);
                 }
-            //} while (key != ConsoleKey.S);
+            } while (key != ConsoleKey.S);
         }
         public void Move(ConsoleKey key)
         {
-            //if (key != ConsoleKey.M)
-            //{
-            //    return;
-            //}
+            if (key != ConsoleKey.M)
+            {
+                return;
+            }
 
-            var shape = ActiveObject;
-
-            var oldCoordinates = shape.Coordinates;
             var newCoordinates = new List<(int X, int Y)>();
             var keptCoordinates = new List<(int X, int Y)>();
             var removeCoordinates = new List<(int X, int Y)>();
             var drawCoordinates = new List<(int X, int Y)>();
-            int xi = 0;
-            int yi = 0;
+            var oldCoordinates = new List<(int X, int Y)>();
+       
+            do
+            {
+                key = Console.ReadKey(true).Key;
+                oldCoordinates.Clear();
+                oldCoordinates.AddRange(ActiveObject.Coordinates);
 
-            //do
-            //{
-            //    key = Console.ReadKey(true).Key;
+                int xi = 0;
+                int yi = 0;
 
                 if (key == ConsoleKey.DownArrow) yi = +1;
-                if (key == ConsoleKey.RightArrow) xi = +1;
+                else if (key == ConsoleKey.RightArrow) xi = +1;
 
-                if (key == ConsoleKey.LeftArrow)
+                else if (key == ConsoleKey.LeftArrow)
                 {
                     if (!oldCoordinates.TrueForAll(c => c.X >= 5))
                     {
@@ -380,7 +406,7 @@ namespace ConsoleGUI.Classes
                     }
                     xi = -1;
                 }
-                if (key == ConsoleKey.UpArrow)
+                else if (key == ConsoleKey.UpArrow)
                 {
                     if (!oldCoordinates.TrueForAll(c => c.Y >= 4))
                     {
@@ -388,17 +414,19 @@ namespace ConsoleGUI.Classes
                     }
                     yi = -1;
                 }
+                else { break; }
 
-
-                foreach (var c in oldCoordinates)
+                foreach (var c in oldCoordinates.ToList())
                 {
                     newCoordinates.Add((c.X + xi, c.Y + yi));
                 }
-                shape.Coordinates = newCoordinates;
+                ActiveObject.Coordinates.Clear();
+                ActiveObject.Coordinates.AddRange(newCoordinates);
 
                 keptCoordinates = oldCoordinates.Intersect(newCoordinates).ToList();
                 drawCoordinates = newCoordinates.Except(keptCoordinates).ToList();
                 removeCoordinates = oldCoordinates.Except(keptCoordinates).ToList();
+
                 foreach (var p in drawCoordinates)
                 {
                     DisplayAdd(p);
@@ -407,10 +435,13 @@ namespace ConsoleGUI.Classes
                 {
                     DisplayRemove(p);
                 }
-                shape.Point1 = (shape.Point1.X + xi, shape.Point1.Y + yi);
-                shape.Point2 = (shape.Point2.X + xi, shape.Point2.Y + yi);
+                newCoordinates.Clear();
+                
+                ActiveObject.Point1 = (ActiveObject.Point1.X + xi, ActiveObject.Point1.Y + yi);
+                ActiveObject.Point2 = (ActiveObject.Point2.X + xi, ActiveObject.Point2.Y + yi);
 
-            //} while (key != ConsoleKey.M);
+                
+            } while (key != ConsoleKey.M);
 
         }
         public void StringPixels((int X, int Y) coord, string prompt, ConsoleColor color, bool center)
@@ -444,8 +475,6 @@ namespace ConsoleGUI.Classes
 
         public void Grid(int rows, int columns, ConsoleColor color = ConsoleColor.DarkGray)
         {
-            var settings = SaveCurrent();
-
             int xOrigo = Constants.XStart - 1;
             int yOrigo = Constants.YStart - 1;
             (int X, int Y) frameOrigo = (xOrigo, yOrigo);
@@ -514,7 +543,8 @@ namespace ConsoleGUI.Classes
             CharPixel((frameOrigo.X, frameEndpoint.Y), '└', color);
             CharPixel(frameEndpoint, '┘', color);
 
-            Restore(settings);
+            Console.CursorLeft = Constants.XEnd / 2;
+            Console.CursorTop = Constants.YEnd / 2;
         }
         public static (int X, int Y) PointFromCursor(out ConsoleKey key, bool dynamic = false)
         {
