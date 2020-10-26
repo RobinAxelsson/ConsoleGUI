@@ -21,12 +21,8 @@ namespace ConsoleGUI
     {
         public static void Main()
         {
-
-            Console.SetWindowSize(Console.LargestWindowWidth, Console.LargestWindowHeight);
-            ShowWindow(ThisConsole, MAXIMIZE);
-            Console.BufferWidth = Console.WindowWidth;
-            //Largest windowwidth = 200
-            //Largest windowheight = 71
+            Settings.SmallWindow();
+            //Settings.FullsizeWindow();
 
             CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
@@ -34,19 +30,33 @@ namespace ConsoleGUI
             var sheet = new DrawSheet();
             sheet.Grid(4,4);
 
-            var circle = new Circle((30, 15), (45, 15), Red);
+     
+
+            var redDots = new FreeForm((10, 10), (11, 10), Red);
+
+            sheet.AddNew(redDots);
+
+            var blueDots = new FreeForm((12, 10), (13, 10), Blue);
+
+            sheet.AddNew(blueDots);
+
+            var greenDots = new FreeForm((12, 10), (13, 10), Green);
+
+            sheet.AddNew(greenDots);
+
+            var circle = new Circle((12, 10), (15, 15), Yellow);
+
             sheet.AddNew(circle);
 
-            var circle2 = new Circle((40, 15), (45, 15), Blue);
-            sheet.AddNew(circle2);
-
             ConsoleKey key = Spacebar;
-            Console.BackgroundColor = Black;
 
             while (key != Enter)
             {
-                sheet.Move(circle2, key);
+                sheet.Move(key);
+                sheet.ShiftLayer(key);
                 sheet.ToggleActiveObject(key);
+                sheet.Scale(key);
+
                 key = Console.ReadKey(true).Key;
             }
 
