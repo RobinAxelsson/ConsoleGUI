@@ -1,15 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Reflection.Metadata.Ecma335;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Flags
 {
     using static ConsoleColor;
-    using static System.Console;
+    using static Console;
     public class Program
     {
 
@@ -17,7 +13,8 @@ namespace Flags
         {
             // We need this to make sure we can always use periods for decimal points.
             CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
-            UtilityMethods.TrackCursor();
+            //UtilityMethods.TrackCursor();
+            Draw(Flag.Gambia);
         }    
         
         public enum Flag
@@ -171,7 +168,7 @@ namespace Flags
                 {
                     DrawRight(c, numbOfSpaces);
                 }
-                Console.WriteLine();
+                WriteLine();
             }
             ResetColor();
         }
