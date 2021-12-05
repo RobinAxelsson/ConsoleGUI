@@ -12,8 +12,25 @@ namespace ConsoleGUI
         public List<(int X, int Y)> Coordinates;
         public ConsoleColor Color;
         public bool IsFilled;
+        public int Count;
         public abstract void Geometry();
     }
+    public class FreeForm : IShape
+    {
+        public FreeForm((int X, int Y) point1, (int X, int Y) point2, ConsoleColor color, bool fill = false)
+        {
+            Point1 = point1;
+            Point2 = point2;
+            Color = color;
+            IsFilled = false;
+            Geometry();
+        }
+        public override void Geometry()
+        {
+             Coordinates = new List<(int X, int Y)>{ Point1, Point2 };
+        }
+    } 
+
     public class Circle : IShape
     {
         public Circle((int X, int Y) point1, (int X, int Y) point2, ConsoleColor color, bool fill = false)

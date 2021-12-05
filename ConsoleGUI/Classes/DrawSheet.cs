@@ -71,7 +71,26 @@ namespace ConsoleGUI.Classes
             Pixels = pixels;
             SheetObjects = shapeObjects;
         }
+        public void addShape(ConsoleKey key)
+        {
+            if (key != ConsoleKey.N)
+            {
+                return;
+            }
+            StringPixels((50, 50), "Pick new object [r][c][l][f]", ConsoleColor.White, true);
 
+
+                key = Console.ReadKey(true).Key;
+                if (key == ConsoleKey.C)
+                {
+                    int x = Console.CursorLeft;
+                    int y = Console.CursorTop;
+                    var circle = new Circle((x, y), (x+5, y), ConsoleColor.Yellow);
+                    AddNew(circle);
+                }
+
+
+        }
         public void Activate(IShape shapeObject)
         {
             ActiveObject = shapeObject;
@@ -99,8 +118,6 @@ namespace ConsoleGUI.Classes
 
             ActiveObject = shapeObject;
             SheetObjects.Add(shapeObject);
-            Console.BackgroundColor = shapeObject.Color;
-            Console.CursorVisible = false;
 
             foreach (var coord in shapeObject.Coordinates)
             {
@@ -113,114 +130,146 @@ namespace ConsoleGUI.Classes
 
         public void DisplayAdd((int X, int Y) coord, char character = ' ')
         {
-            var settings = SaveCurrent();
-            bool pixelExists = Pixels.Select(p => p.Coord).ToList().Contains(coord);
-
-            if (!pixelExists)
+            if (coord.X > 0 && coord.Y > 0)
             {
-                var pixel = new Pixel(coord, ActiveObject);
-                Console.SetCursorPosition(coord.X, coord.Y);
-                Console.Write(character);
-                Pixels.Add(pixel);
-                pixel.Refresh();
-            }
-            else
-            {
-                var pixel = Pixels.Find(p => p.Coord == coord);
+                var settings = SaveCurrent();
+                bool pixelCoordExists = Pixels.Select(p => p.Coord).ToList().Contains(coord);
 
-                if (pixel.PresentObjects.Count == 0)
+                if (!pixelCoordExists)
                 {
-                    pixel.PresentObjects.Add(ActiveObject);
+                    var pixel = new Pixel(coord, ActiveObject);
+                    Pixels.Add(pixel);
                     pixel.Refresh();
-                }
-
-                var pixelObject = pixel.PresentObjects[^1];
-                    
-                bool isActiveObjectTop = pixelObject == ActiveObject;
-
-                if (isActiveObjectTop)
-                {
                 }
                 else
                 {
-                    bool activeObjectExists = pixel.PresentObjects.Exists(obj => obj == ActiveObject);
-                    if (activeObjectExists) 
+                    var pixel = Pixels.Find(p => p.Coord == coord);
+
+                    if (pixel.PresentObjects.Count == 0)
                     {
+                        pixel.PresentObjects.Add(ActiveObject);
+                        pixel.Refresh();
                     }
-                    else //What index? Which order. if it not exists it needs to be ordered;
+
+                    else
                     {
-                        var indexHits = new List<int>();
-                        int pixelIndex = 0;
+
+                        var pixelObjectsTrueIndex = new List<int>();
 
                         for (int i = 0; i < SheetObjects.Count; i++)
                         {
-                            if (SheetObjects[i] == pixel.PresentObjects[pixelIndex] && pixelIndex >= pixel.PresentObjects.Count)
+                            if (pixel.PresentObjects.Contains(SheetObjects[i]))
                             {
-                                indexHits.Add(i);
-                                pixelIndex++;
+                                pixelObjectsTrueIndex.Add(SheetObjects.FindIndex(obj => obj == SheetObjects[i]));
                             }
+                        }
+
+                        var orderedByAsc = pixelObjectsTrueIndex.OrderBy(d => d);
+                        bool correctLayerOrder = pixelObjectsTrueIndex.SequenceEqual(orderedByAsc);
+                        bool activeObjectExists = pixel.PresentObjects.Exists(obj => obj == ActiveObject);
+
+                        if (correctLayerOrder && activeObjectExists)
+                        {
+                            return;
                         }
 
                         int activeObjectIndex = SheetObjects.FindIndex(obj => obj == ActiveObject);
 
-                        bool isNewObjectAbove = indexHits.TrueForAll(i => i < activeObjectIndex);
-                        if (isNewObjectAbove)
+                        if (correctLayerOrder && !activeObjectExists)
                         {
-                            pixel.PresentObjects.Add(ActiveObject);
-                            pixel.Refresh();
-                        }
-                        else //insert object at index
-                        {
-                            bool isNewObjectLowest = activeObjectIndex == 0;
-                            
-                            if (isNewObjectLowest)
+                            bool activeObjectIsHigher = pixelObjectsTrueIndex.TrueForAll(i => i < activeObjectIndex);
+
+                            if (activeObjectIsHigher)
                             {
-                                pixel.PresentObjects.Insert(0, ActiveObject);
+                                pixel.PresentObjects.Add(ActiveObject);
+                                pixel.Refresh();
+                                return;
                             }
-                            else
-                            {
-                                int iInsert = indexHits.FindIndex(i => i > activeObjectIndex);
-                                pixel.PresentObjects.Insert(iInsert, ActiveObject);
-                            }                            
+
+                            int insertIndex = pixelObjectsTrueIndex.FindIndex(i => i > activeObjectIndex);
+                            pixel.PresentObjects.Insert(insertIndex, ActiveObject);
+                            return;
+                        }
+
+                        if (!correctLayerOrder)
+                        {
+                            Console.WriteLine("The objects are not ordered correctly in all pixels.");
                         }
                     }
-                }
-                Restore(settings);
-            }        
+                }                   
+            }
         }
+        public void ShiftLayer(ConsoleKey key)
+        {
+            if (key == ConsoleKey.Add)
+            {
+                if (ActiveObject != SheetObjects[^1])
+                {
+                    int oldIndex = SheetObjects.FindIndex(obj => obj == ActiveObject);
+                    SheetObjects.Remove(ActiveObject);
+                    SheetObjects.Insert(oldIndex + 1, ActiveObject);
+                }
+            }
+            if (key == ConsoleKey.Subtract)
+            {
+                if (ActiveObject != SheetObjects[0])
+                {
+                    int oldIndex = SheetObjects.FindIndex(obj => obj == ActiveObject);
+                    SheetObjects.Remove(ActiveObject);
+                    SheetObjects.Insert(oldIndex - 1, ActiveObject);
+                }
+            }
+        }
+    
         public void DisplayRemove((int X, int Y) coord)
         {
+            if (coord.X <= 0 || coord.Y <= 0)
+            {
+                return;
+            }
            Console.BackgroundColor = ConsoleColor.Black;
            var pixel = Pixels.Find(p => p.Coord == coord);
+
             if (pixel.PresentChars.Count > 1)
             {
                 pixel.PresentObjects.Remove(ActiveObject);
                 pixel.Refresh();
+                return;
             }
             else
             {
-               pixel.PresentObjects.Clear();
-               pixel.Refresh();
-               Pixels.Remove(pixel);
-            }
-        
+                if (pixel.PresentObjects.Count == 1)
+                {
+                   pixel.PresentObjects.Clear();
+                   pixel.Refresh();
+                   Pixels.Remove(pixel);
+                   return;
+                }
+                else
+                {
+                    pixel.PresentObjects.Remove(ActiveObject);
+                    pixel.Refresh();
+                }
+            }        
         }
         public void ToggleActiveObject(ConsoleKey key)
         {
             int index = SheetObjects.FindIndex(obj => obj == ActiveObject);
             if (key == ConsoleKey.Tab)
             {
-                if (index != SheetObjects.Count-1)
-                {
-                    ActiveObject = SheetObjects[index + 1];
-                }
-                else
+                bool isActiveObjectLastIndex = index == SheetObjects.Count - 1;
+
+                if (isActiveObjectLastIndex)
                 {
                     ActiveObject = SheetObjects[0];
                 }
+                else
+                {
+                    ActiveObject = SheetObjects[index + 1];
+                }
             }
         }
-        public void Move(IShape shape, ConsoleKey key)
+        public void Move(IShape shape, int x)
         {
             ActiveObject = shape;
 
@@ -229,17 +278,11 @@ namespace ConsoleGUI.Classes
             var keptCoordinates = new List<(int X, int Y)>();
             var removeCoordinates = new List<(int X, int Y)>();
             var drawCoordinates = new List<(int X, int Y)>();
-            int xi = 0;
-            int yi = 0;
-
-            if (key == ConsoleKey.DownArrow) yi = +1;
-            if (key == ConsoleKey.RightArrow) xi = +1;
-            if (key == ConsoleKey.LeftArrow) xi = -1;
-            if (key == ConsoleKey.UpArrow) yi = -1;
+      
 
             foreach (var c in oldCoordinates)
             {
-                newCoordinates.Add((c.X + xi, c.Y + yi));
+                newCoordinates.Add((c.X + x, c.Y));
             }
             shape.Coordinates = newCoordinates;
 
@@ -254,7 +297,152 @@ namespace ConsoleGUI.Classes
             {
                 DisplayRemove(p);
             }
-            
+
+            shape.Point1 = (shape.Point1.X + x, shape.Point2.Y);
+
+        }
+        public void Scale(ConsoleKey key)
+        {
+            if (key != ConsoleKey.S)
+            {
+                return;
+            }
+
+
+            var newCoordinates = new List<(int X, int Y)>();
+            var keptCoordinates = new List<(int X, int Y)>();
+            var removeCoordinates = new List<(int X, int Y)>();
+            var drawCoordinates = new List<(int X, int Y)>();
+            var oldCoordinates = new List<(int X, int Y)>();
+            (int X, int Y) oldPoint2;
+            int xi;
+            int yi;
+
+            do
+            {
+                oldCoordinates.Clear();
+                newCoordinates.Clear();
+                key = Console.ReadKey(true).Key;
+                oldCoordinates.AddRange(ActiveObject.Coordinates);
+                oldPoint2 = (ActiveObject.Point2.X, ActiveObject.Point2.Y);
+                xi = 0;
+                yi = 0;
+
+                if (key == ConsoleKey.DownArrow) yi = +1;
+                if (key == ConsoleKey.RightArrow) xi = +1;
+
+                if (key == ConsoleKey.LeftArrow)
+                {
+                    if (!oldCoordinates.TrueForAll(c => c.X >= 5))
+                    {
+                        return;
+                    }
+                    xi = -1;
+                }
+                if (key == ConsoleKey.UpArrow)
+                {
+                    if (!oldCoordinates.TrueForAll(c => c.Y >= 4))
+                    {
+                        return;
+                    }
+                    yi = -1;
+                }
+
+                ActiveObject.Point2 = (ActiveObject.Point2.X + xi, ActiveObject.Point2.Y + yi);
+                ActiveObject.Geometry();
+
+                newCoordinates.AddRange(ActiveObject.Coordinates);
+
+                if (!newCoordinates.TrueForAll(c => c.X >= 5))
+                {
+                    ActiveObject.Point2 = oldPoint2;
+                    ActiveObject.Geometry();
+                    return;
+                }
+
+                keptCoordinates = oldCoordinates.Intersect(newCoordinates).ToList();
+                drawCoordinates = newCoordinates.Except(keptCoordinates).ToList();
+                removeCoordinates = oldCoordinates.Except(keptCoordinates).ToList();
+                foreach (var p in drawCoordinates)
+                {
+                    DisplayAdd(p);
+                }
+                foreach (var p in removeCoordinates)
+                {
+                    DisplayRemove(p);
+                }
+            } while (key != ConsoleKey.S);
+        }
+        public void Move(ConsoleKey key)
+        {
+            if (key != ConsoleKey.M)
+            {
+                return;
+            }
+
+            var newCoordinates = new List<(int X, int Y)>();
+            var keptCoordinates = new List<(int X, int Y)>();
+            var removeCoordinates = new List<(int X, int Y)>();
+            var drawCoordinates = new List<(int X, int Y)>();
+            var oldCoordinates = new List<(int X, int Y)>();
+       
+            do
+            {
+                key = Console.ReadKey(true).Key;
+                oldCoordinates.Clear();
+                oldCoordinates.AddRange(ActiveObject.Coordinates);
+
+                int xi = 0;
+                int yi = 0;
+
+                if (key == ConsoleKey.DownArrow) yi = +1;
+                else if (key == ConsoleKey.RightArrow) xi = +1;
+
+                else if (key == ConsoleKey.LeftArrow)
+                {
+                    if (!oldCoordinates.TrueForAll(c => c.X >= 5))
+                    {
+                        return;
+                    }
+                    xi = -1;
+                }
+                else if (key == ConsoleKey.UpArrow)
+                {
+                    if (!oldCoordinates.TrueForAll(c => c.Y >= 4))
+                    {
+                        return;
+                    }
+                    yi = -1;
+                }
+                else { break; }
+
+                foreach (var c in oldCoordinates.ToList())
+                {
+                    newCoordinates.Add((c.X + xi, c.Y + yi));
+                }
+                ActiveObject.Coordinates.Clear();
+                ActiveObject.Coordinates.AddRange(newCoordinates);
+
+                keptCoordinates = oldCoordinates.Intersect(newCoordinates).ToList();
+                drawCoordinates = newCoordinates.Except(keptCoordinates).ToList();
+                removeCoordinates = oldCoordinates.Except(keptCoordinates).ToList();
+
+                foreach (var p in drawCoordinates)
+                {
+                    DisplayAdd(p);
+                }
+                foreach (var p in removeCoordinates)
+                {
+                    DisplayRemove(p);
+                }
+                newCoordinates.Clear();
+                
+                ActiveObject.Point1 = (ActiveObject.Point1.X + xi, ActiveObject.Point1.Y + yi);
+                ActiveObject.Point2 = (ActiveObject.Point2.X + xi, ActiveObject.Point2.Y + yi);
+
+                
+            } while (key != ConsoleKey.M);
+
         }
         public void StringPixels((int X, int Y) coord, string prompt, ConsoleColor color, bool center)
         {
@@ -338,14 +526,14 @@ namespace ConsoleGUI.Classes
             {
                 for (int j = 0; j < rowLines[i].Count; j += 8)
                 {
-                    CharPixel(rowLines[i][j], '─', color);
+                   CharPixel(rowLines[i][j], '─', color);
                 }
             }
             for (int i = 1; i < columnLines.Count - 1; i++) //middle columns
             {
                 for (int j = 0; j < columnLines[i].Count; j += 4)
-                {
-                    CharPixel(columnLines[i][j], '│', color);
+                {                   
+                   CharPixel(columnLines[i][j], '│', color);
                 }
             }
 
@@ -354,6 +542,9 @@ namespace ConsoleGUI.Classes
             CharPixel((frameEndpoint.X, frameOrigo.Y), '┐', color);
             CharPixel((frameOrigo.X, frameEndpoint.Y), '└', color);
             CharPixel(frameEndpoint, '┘', color);
+
+            Console.CursorLeft = Constants.XEnd / 2;
+            Console.CursorTop = Constants.YEnd / 2;
         }
         public static (int X, int Y) PointFromCursor(out ConsoleKey key, bool dynamic = false)
         {
