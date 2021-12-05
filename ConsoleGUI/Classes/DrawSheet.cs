@@ -11,8 +11,8 @@ namespace ConsoleGUI.Classes
 
         public const int XStart = 5;
         public const int YStart = 3;
-        public const int XEnd = 150;
-        public const int YEnd = 60;
+        public const int XEnd = 200;
+        public const int YEnd = 71;
         public const ConsoleColor BackgroundColor = ConsoleColor.Black;
     }
     public class Pixel

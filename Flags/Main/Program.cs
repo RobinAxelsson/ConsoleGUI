@@ -15,6 +15,9 @@ namespace Flags
             CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
             //UtilityMethods.TrackCursor();
             Draw(Flag.Gambia);
+            Draw(Flag.Germany);
+            Draw(Flag.Sweden);
+            Draw(Flag.Botswana);
         }    
         
         public enum Flag

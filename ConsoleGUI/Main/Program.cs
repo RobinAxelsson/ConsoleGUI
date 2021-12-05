@@ -22,7 +22,7 @@ namespace ConsoleGUI
         public static void Main()
         {
             //Settings.SmallWindow();
-            //Settings.FullsizeWindow();
+            Settings.FullsizeWindow();
 
             CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
